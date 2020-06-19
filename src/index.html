@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <title>Cloud Stuff</title>
+        <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
+        <style>
+
+        </style>
+    </head>
+    <body>
+
+        <h1 id="fbTrace"></h1>
+        <p id="lastChatMsg"></p>
+        <div id="imageViewer"></div>
+
+        <script type="text/javascript">
+
+            let scores = [];
+
+            class score
+            {
+                constructor(user, lastMessage) {
+                    this.user = user;
+                    this.lastMessage = lastMessage;
+                }
+            }
+
+            searchByUser = function(userName)
+            {
+                function search(userName, scores){
+                    for (var i=0; i < myArray.length; i++) {
+                        if (scores[i].user === userName) {
+                            return scores[i];
+                        }
+                    }
+                }
+            }
+
+
+            ComfyJS.onCommand = async ( user, command, message, flags, extra ) => {
+              if( command === "test" ) {
+                console.log( "!test was typed in chat" );
+                document.querySelector("#fbTrace").innerText = message 
+              }
+              else if( flags.broadcaster && command === "cloud" ) {
+                console.log( "!cloud was typed in chat" );
+                document.querySelector("#imageViewer").innerHTML = "<img src='smillingcloud.gif' class='nuage'>";
+              }
+              else if( flags.broadcaster && command === "scores" ) {
+                console.log( "!scores was typed in chat" );
+
+                let strMsg = "<table>";
+                for (var i=0; i < scores.length; i++) {
+                    strMsg += "<tr>";
+                    strMsg += `<td>${scores[i].user}</td><td>${scores[i].lastMessage}</td>`;
+                    strMsg += "</tr>";
+                }
+                strMsg += "</table>";
+
+
+                document.querySelector("#fbTrace").innerHTML = strMsg;
+                }
+            }
+
+            ComfyJS.onChat = ( user, message, flags, self, extra ) => {
+               
+                console.log(
+                    `new incoming...`
+                );   
+
+                let curScore = searchByUser(user);
+                if(curScore)
+                {
+                    curScore.lastMessage = message;
+                }
+                else
+                {
+                    scores.push(new score(user, message));
+                }
+                document.querySelector("#lastChatMsg").innerText = message;     
+            }
+
+            ComfyJS.Init( "fboucheros" );
+          </script>
+    </body>
+</html>

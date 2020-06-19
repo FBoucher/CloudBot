@@ -1,0 +1,22 @@
+{
+  "name": "cloudbot",
+  "version": "1.0.0",
+  "description": "Twitch ChatBot and Score keeper",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FBoucher/CloudBot.git"
+  },
+  "author": "fboucher",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FBoucher/CloudBot/issues"
+  },
+  "homepage": "https://github.com/FBoucher/CloudBot#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
