@@ -1,56 +1,52 @@
-class score
+let streamSession = [];
+
+
+
+class UserSession
 {
-    constructor(user, lastMessage, score) {
+    constructor(user) {
+        this.dropCount = 0;
+        this.landedCount = 0;
         this.user = user;
-        this.lastMessage = lastMessage;
-        this.highestScore = score;
+        this.lastMessage = "";
+        this.highestScore = 0;
     }
 }
 
-searchByUser = function(userName)
+
+
+
+getUserPosition = function(userName)
 {
     console.log( "... Searching for: " + userName );
-    for (i=0; i < scoreskeeper.length; i++) {
-        console.log( "... looking at : " + scoreskeeper[i].user );
-        if (scoreskeeper[i].user === userName) {
+    for (i=0; i < streamSession.length; i++) {
+        console.log( "... looking at : " + streamSession[i].user );
+        if (streamSession[i].user === userName) {
             console.log( "... found in position: " + i );
             return i;
         }
     }
-    return -1;
+    streamSession.push(new UserSession(userName));
+    return i++;
 }
 
 
-testAzFunc = async function(name, callback)
-{
-    const Http = new XMLHttpRequest();
-    const url=`http://<FunctionAppName>.azurewebsites.net/api/WhatsNew?name=${name}`;
-    Http.open("GET", url);
-    Http.send();
-    Http.onreadystatechange = (e) => {
-        callback(Http.responseText);
-    } 
-}
 
 updateTrace = function(message)
 {
-    document.querySelector("#fbTrace").innerHTML = message;
+    document.querySelector("#cbTitle").innerHTML = message;
 }
+
 
 
 clean = function()
 {
     document.querySelector("#imageViewer").innerHTML = "";
     document.querySelector("#lastChatMsg").innerHTML = "";
-    document.querySelector("#fbTrace").innerHTML = "";
+    document.querySelector("#cbTitle").innerHTML = "";
 }
 
-test = function(message)
-{
-    console.log( "!test was typed in chat" );
-    document.querySelector("#fbTrace").innerText = message 
-    setTimeout(() => { document.querySelector("#fbTrace").innerText = ""; }, 5000);
-}
+
 
 cloud = function()
 {
@@ -59,34 +55,37 @@ cloud = function()
     setTimeout(() => {  clean(); }, 5000);
 }
 
+
+
 scores = function()
 {
     console.log( "!scores was typed in chat" );
 
     let strMsg = "<table>";
-    for ( i=0; i < scoreskeeper.length; i++) {
+    for ( i=0; i < streamSession.length; i++) {
         strMsg += "<tr>";
-        strMsg += `<td>${scoreskeeper[i].user}</td><td>${scoreskeeper[i].highestScore}</td>`;
+        strMsg += `<td>${streamSession[i].user}</td><td>${streamSession[i].highestScore}</td>`;
         strMsg += "</tr>";
     }
     strMsg += "</table>";
 
-    document.querySelector("#fbTrace").innerHTML = strMsg;
+    document.querySelector("#cbTitle").innerHTML = strMsg;
 }
 
-CheckForHighScore = function(user, curScore)
+
+
+UserLanded = function(user, curScore)
 {
-    let userPos = searchByUser(user);
+    let userPos = getUserPosition(user);
 
     if(userPos >= 0)
     {
-        console.log( "... User found at : " + userPos);
-        console.log( "... previous highscore: " + scoreskeeper[userPos].highestScore);
+        streamSession[userPos].landedCount++;
 
-        if(scoreskeeper[userPos].highestScore < curScore)
+        if(streamSession[userPos].highestScore < curScore)
         {
             console.log( "... New highscore " + curScore);
-            scoreskeeper[userPos].highestScore = curScore;
+            streamSession[userPos].highestScore = curScore;
             HightScoreParty(user, curScore);
         }
         else{
@@ -95,41 +94,48 @@ CheckForHighScore = function(user, curScore)
     }
     else
     {
-        console.log( "... User NOT found, creating new Stats...");
-        scoreskeeper.push(new score(user, "", curScore));
+        console.log( "... User NOT found?!");
     }
 }
 
-AddUserToScoreKeeper = function()
-{
-    scoreskeeper.push(new score(user, message, 0));
-}
         
 
 ParseMessage = function(message)
 {
-    // FBoucheros: theunoriginaljerk landed for 86.60!
+    // FBoucheros: FBoucheros landed for 86.60!
     let splitedMsg = message.split(" ");
-    let user = splitedMsg[0];
-    let curScore = splitedMsg[3].slice(0, -1);
-
+   
     if(splitedMsg.length > 1 && splitedMsg[1] === "landed")
     {
-        CheckForHighScore(user, curScore);
+        let user = splitedMsg[0];
+        let curScore = splitedMsg[3].slice(0, -1);
+
+        UserLanded(user, curScore);
     }
 }
+
+
+DisplayNotification = function(title, message)
+{
+    // Need to find a none JQUery lib
+    //toastr.success(message, title);
+}
+
 
 HightScoreParty = function(user, score){
     let msg = `${user} just beat his/her highest score! now at: ${score}`
     console.log( "... " + msg);
-    test(msg);
+    ChatBotShout(msg);
+    //DisplayNotification("New high score!", msg);
     cloud();
 }
+
+
 
 StatsFor = function(user){
     
     console.log( "... looking stats for: " + user);
-    let userPos = searchByUser(user);
+    let userPos = getUserPosition(user);
     console.log( "... userPos: " + userPos);
 
     let msg = `${user} sorry no stats yet...`
@@ -138,15 +144,35 @@ StatsFor = function(user){
     if(userPos >= 0)
     {
         console.log( "... " + msg);
-        msg = `${user} *Stats* highest score: ${scoreskeeper[userPos].highestScore}`
+        msg = `${user} * *Stats* *   Tentative(s): ${streamSession[userPos].dropCount}    Landed: ${streamSession[userPos].landedCount}     Highest score: ${streamSession[userPos].highestScore}`
     }
 
-    //ComfyJS.Say( msg );
-    document.querySelector("#fbTrace").innerHTML = msg;
+    ComfyJS.Say( msg );
+    document.querySelector("#cbTitle").innerHTML = msg;
     setTimeout(() => {  clean(); }, 5000);
 }
+
+
 
 ChatBotSay = function(msg)
 {
     ComfyJS.Say( msg );
+}
+
+
+
+
+ChatBotShout = function(message)
+{
+    console.log( "!ChatBotShout was typed in chat" );
+    document.querySelector("#cbTitle").innerText = message 
+    setTimeout(() => { document.querySelector("#cbTitle").innerText = ""; }, 5000);
+}
+
+
+
+IncrementDropCounter = function(user)
+{
+    let userPos = getUserPosition(user);
+    streamSession[userPos].dropCount++;
 }
