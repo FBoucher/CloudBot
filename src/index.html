@@ -2,7 +2,8 @@
     <head>
         <title>Cloud Stuff</title>
         <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/comfytwitch@latest/web/comfytwitch.min.js"></script>
+        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> -->
         <script src="secret.js"></script>
         <script src="cloudbot.js"></script>
         <style>
@@ -31,17 +32,18 @@
     </head>
     <body>
 
-        <h1 id="fbTrace"></h1>
+        <h1 id="cbTitle"></h1>
         <p id="lastChatMsg"></p>
         <div id="imageViewer"></div>
         
         <script type="text/javascript">
 
-            let scoreskeeper = [];
-
             ComfyJS.onCommand = async ( user, command, message, flags, extra ) => {
-                if( command === "test" ) {
-                    test(message);
+                if( command === "shout" ) {
+                    ChatBotShout(message);
+                }
+                else if( flags.broadcaster && command === "ok-bye" ) {
+                    ComfyJS.Disconnect();
                 }
                 else if( flags.broadcaster && command === "talk" ) {
                     ChatBotSay();
@@ -53,10 +55,6 @@
                     console.log( "!clean was typed in chat" );
                     clean();
                 }
-                else if( command === "az" ) {
-                    console.log( "!az was typed in chat" );
-                    testAzFunc(message, updateTrace);
-                }
                 else if( flags.broadcaster && command === "scores" ) 
                 {
                     scores();
@@ -66,20 +64,19 @@
                     console.log( "!stats was typed in chat" );
                     StatsFor(user);
                 }
+                else if( command === "drop" ) 
+                {
+                    console.log( "!drop was typed in chat" );
+                    IncrementDropCounter(user);
+                }
             }
 
             ComfyJS.onChat = ( user, message, flags, self, extra ) => {
                
-                console.log(
-                    `new incoming...`
-                );   
-
                 if( flags.broadcaster) {
-                    console.log( "Frank message" );
+                    console.log( "...broadcaster message" );
                     ParseMessage(message);
                 }
-                
-                document.querySelector("#lastChatMsg").innerText = message; 
             }
 
             //
@@ -89,5 +86,6 @@
 
             ComfyJS.Init( "fboucheros", authToken );
           </script>
+          
     </body>
 </html>
