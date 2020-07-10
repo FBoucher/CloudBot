@@ -4,7 +4,7 @@
   "description": "Twitch ChatBot and Score keeper",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "nodemon ./index.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "homepage": "https://github.com/FBoucher/CloudBot#readme",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

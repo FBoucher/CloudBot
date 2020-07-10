@@ -51,7 +51,7 @@ clean = function()
 cloud = function()
 {
     console.log( "!cloud was typed in chat" );
-    document.querySelector("#imageViewer").innerHTML = "<img src='medias/smillingcloud.gif' class='nuage'>";
+    document.querySelector("#imageViewer").innerHTML = "<img src='public/medias/smillingcloud_50.gif' class='nuage'>";
     setTimeout(() => {  clean(); }, 5000);
 }
 
@@ -107,7 +107,7 @@ ParseMessage = function(message)
    
     if(splitedMsg.length > 1 && splitedMsg[1] === "landed")
     {
-        let user = splitedMsg[0];
+        let user = splitedMsg[0].toLowerCase();
         let curScore = splitedMsg[3].slice(0, -1);
 
         UserLanded(user, curScore);
@@ -175,4 +175,25 @@ IncrementDropCounter = function(user)
 {
     let userPos = getUserPosition(user);
     streamSession[userPos].dropCount++;
+}
+
+
+
+testing123 = function(user)
+{
+
+    fetch('/Hello', {
+        method: 'POST',
+        body: {"user":user}
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+        ChatBotSay(result.msg);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+
 }
