@@ -77,6 +77,16 @@
                     console.log( "!test was typed in chat" );
                     testing123(user);
                 }
+                else if( flags.broadcaster && command === "save" ) 
+                {
+                    console.log( "!save was typed in chat" );
+                    SaveToFile();
+                }
+                else if( flags.broadcaster && command === "load" ) 
+                {
+                    console.log( "!load was typed in chat" );
+                    LoadFromFile();
+                }
             }
 
             ComfyJS.onChat = ( user, message, flags, self, extra ) => {
@@ -93,6 +103,7 @@
             //
 
             ComfyJS.Init( "fboucheros", authToken );
+            
           </script>
           
     </body>

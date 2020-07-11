@@ -181,11 +181,14 @@ IncrementDropCounter = function(user)
 
 testing123 = function(user)
 {
-
-    fetch('/Hello', {
+    const data = {user: user};
+    const options = {
         method: 'POST',
-        body: {"user":user}
-    })
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }
+
+    fetch('/Hello', options)
     .then(response => response.json())
     .then(result => {
         console.log('Success:', result);
@@ -195,5 +198,49 @@ testing123 = function(user)
         console.error('Error:', error);
     });
 
+}
+
+
+SaveToFile = function()
+{
+    const data = {streamSession: streamSession};
+    console.log('..c. data: ', data);
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }
+
+    fetch('/savetofile', options)
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+        ChatBotSay(result.msg);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+}
+
+
+
+LoadFromFile = function()
+{
+    
+    const options = {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    }
+
+    fetch('/loadfromfile', options)
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+        streamSession = Object.values(result);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 
 }
