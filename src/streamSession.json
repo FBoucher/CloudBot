@@ -1,1 +1,19 @@
-[{"dropCount":1,"landedCount":0,"user":"fboucheros","lastMessage":"","highestScore":0}]
+{
+  "UserSession": [
+    {
+      "dropCount": 1,
+      "landedCount": 0,
+      "user": "fboucheros",
+      "lastMessage": "",
+      "hightScore": 0
+    },
+    {
+      "dropCount": 1,
+      "landedCount": 0,
+      "user": "lostalgorithm",
+      "lastMessage": "",
+      "hightScore": 0
+    }
+  ],
+  "Followers": []
+}

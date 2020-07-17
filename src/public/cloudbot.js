@@ -1,4 +1,4 @@
-let streamSession = [];
+
 
 
 
@@ -9,24 +9,35 @@ class UserSession
         this.landedCount = 0;
         this.user = user;
         this.lastMessage = "";
-        this.highestScore = 0;
+        this.hightScore = 0;
     }
 }
 
 
 
+class StreamSession
+{
+    constructor() {
+        this.UserSession =  [];
+        this.Followers= [];
+    }
+}
+
+
+let streamSession = new StreamSession();
+
 
 getUserPosition = function(userName)
 {
     console.log( "... Searching for: " + userName );
-    for (i=0; i < streamSession.length; i++) {
-        console.log( "... looking at : " + streamSession[i].user );
-        if (streamSession[i].user === userName) {
+    for (i=0; i < streamSession.UserSession.length; i++) {
+        console.log( "... looking at : " + streamSession.UserSession[i].user );
+        if (streamSession.UserSession[i].user === userName) {
             console.log( "... found in position: " + i );
             return i;
         }
     }
-    streamSession.push(new UserSession(userName));
+    streamSession.UserSession.push(new UserSession(userName));
     return i++;
 }
 
@@ -62,9 +73,9 @@ scores = function()
     console.log( "!scores was typed in chat" );
 
     let strMsg = "<table>";
-    for ( i=0; i < streamSession.length; i++) {
+    for ( i=0; i < streamSession.UserSession.length; i++) {
         strMsg += "<tr>";
-        strMsg += `<td>${streamSession[i].user}</td><td>${streamSession[i].highestScore}</td>`;
+        strMsg += `<td>${streamSession.UserSession[i].user}</td><td>${streamSession.UserSession[i].hightScore}</td>`;
         strMsg += "</tr>";
     }
     strMsg += "</table>";
@@ -80,12 +91,12 @@ UserLanded = function(user, curScore)
 
     if(userPos >= 0)
     {
-        streamSession[userPos].landedCount++;
+        streamSession.UserSession[userPos].landedCount++;
 
-        if(streamSession[userPos].highestScore < curScore)
+        if(streamSession.UserSession[userPos].hightScore < curScore)
         {
             console.log( "... New highscore " + curScore);
-            streamSession[userPos].highestScore = curScore;
+            streamSession.UserSession[userPos].hightScore = curScore;
             HightScoreParty(user, curScore);
         }
         else{
@@ -144,7 +155,7 @@ StatsFor = function(user){
     if(userPos >= 0)
     {
         console.log( "... " + msg);
-        msg = `${user} * *Stats* *   Tentative(s): ${streamSession[userPos].dropCount}    Landed: ${streamSession[userPos].landedCount}     Highest score: ${streamSession[userPos].highestScore}`
+        msg = `${user} * *Stats* *   Tentative(s): ${streamSession.UserSession[userPos].dropCount}    Landed: ${streamSession.UserSession[userPos].landedCount}     Highest score: ${streamSession.UserSession[userPos].hightScore}`
     }
 
     ComfyJS.Say( msg );
@@ -174,7 +185,7 @@ ChatBotShout = function(message)
 IncrementDropCounter = function(user)
 {
     let userPos = getUserPosition(user);
-    streamSession[userPos].dropCount++;
+    streamSession.UserSession[userPos].dropCount++;
 }
 
 
@@ -237,10 +248,44 @@ LoadFromFile = function()
     .then(response => response.json())
     .then(result => {
         console.log('Success:', result);
-        streamSession = Object.values(result);
+        console.log('...Trace:', Object.values(result));
+        //streamSession = Object.values(result);
+        LoadStreamSession(result);
     })
     .catch(error => {
         console.error('Error:', error);
     });
 
 }
+
+
+LoadStreamSession = function(data)
+{
+    streamSession = new StreamSession();
+    streamSession.UserSession = data.UserSession.map((o) => { 
+        const newUser = new UserSession(); 
+        for (const [key, value] of Object.entries(o)) 
+        { 
+            newUser[key] = value; 
+        } return newUser; 
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

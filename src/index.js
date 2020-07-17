@@ -34,7 +34,7 @@ app.post("/savetofile", (req, res) => {
 
         console.log(req.body.streamSession)
 
-        const data = JSON.stringify(req.body.streamSession)
+        const data = JSON.stringify(req.body.streamSession,null, 2)
         fs.writeFile('streamSession.json', data, (err) => {
             if (err) {
                 res.json({error:err}) 
@@ -61,8 +61,9 @@ app.get("/loadfromfile", (req, res) => {
                 res.json({error:err}) 
             }
             console.log("JSON data is load.");
-            const streamSession = JSON.parse(data.toString());
-            res.send({streamSession})
+            //console.log("... Trace: " + data.toString());
+            const streamSession = JSON.parse(data);
+            res.send(streamSession)
         });
     }
     else{
