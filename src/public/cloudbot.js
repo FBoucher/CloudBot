@@ -13,7 +13,9 @@ class UserSession
     }
 }
 
-
+compareHightScore = function(a, b) {
+    return a.hightScore - b.hightScore;
+}
 
 class StreamSession
 {
@@ -59,28 +61,31 @@ clean = function()
 
 
 
-cloud = function()
+cloud = function(expression)
 {
-    console.log( "!cloud was typed in chat" );
-    document.querySelector("#imageViewer").innerHTML = "<img src='public/medias/smillingcloud_50.gif' class='nuage'>";
+
+    const fileName = "CB-" + expression + ".gif";
+    document.querySelector("#imageViewer").innerHTML = "<img src='public/medias/" + fileName + "' class='nuage'>";
     setTimeout(() => {  clean(); }, 5000);
 }
 
-
+sleep = function (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 scores = function()
 {
     console.log( "!scores was typed in chat" );
 
-    let strMsg = "<table>";
-    for ( i=0; i < streamSession.UserSession.length; i++) {
-        strMsg += "<tr>";
-        strMsg += `<td>${streamSession.UserSession[i].user}</td><td>${streamSession.UserSession[i].hightScore}</td>`;
-        strMsg += "</tr>";
-    }
-    strMsg += "</table>";
+    var sortedUsers = streamSession.UserSession.sort(compareHightScore);
 
-    document.querySelector("#cbTitle").innerHTML = strMsg;
+    for ( i=0; i < sortedUsers.length; i++) {
+        const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
+        console.log( "... pre Showing: " + sortedUsers[i].user);
+        setTimeout(() => {
+            DisplayNotification( msg );
+        }, i * 1000); 
+    }
 }
 
 
@@ -123,22 +128,45 @@ ParseMessage = function(message)
 
         UserLanded(user, curScore);
     }
+    else if( message.startsWith("Thank you for following") )
+    {
+        let user = splitedMsg[4].toLowerCase().slice(0, -1);
+        streamSession.Followers.push(user);
+    }
 }
 
 
 DisplayNotification = function(title, message)
 {
-    // Need to find a none JQUery lib
-    //toastr.success(message, title);
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut",
+        "allowHtml": true
+    };
+    console.log( "... toasting: " + message);
+    toastr.info(message, title);
 }
 
 
 HightScoreParty = function(user, score){
     let msg = `${user} just beat his/her highest score! now at: ${score}`
     console.log( "... " + msg);
-    ChatBotShout(msg);
-    //DisplayNotification("New high score!", msg);
-    cloud();
+    //ChatBotShout(msg);
+    DisplayNotification("New high score!", msg);
+    cloud("Yeah");
 }
 
 
@@ -154,12 +182,13 @@ StatsFor = function(user){
 
     if(userPos >= 0)
     {
-        console.log( "... " + msg);
-        msg = `${user} * *Stats* *   Tentative(s): ${streamSession.UserSession[userPos].dropCount}    Landed: ${streamSession.UserSession[userPos].landedCount}     Highest score: ${streamSession.UserSession[userPos].hightScore}`
+        msg = `Tentative(s): ${streamSession.UserSession[userPos].dropCount} <br />Landed: ${streamSession.UserSession[userPos].landedCount} <br />Highest score: ${streamSession.UserSession[userPos].hightScore}`
     }
 
-    ComfyJS.Say( msg );
-    document.querySelector("#cbTitle").innerHTML = msg;
+    //console.log( "... " + msg.replace(/<br \/>/g, "   "));
+    ComfyJS.Say( msg.replace(/<br \/>|<br\/>/g, "   ") );
+    DisplayNotification(`${user} Stats`, msg)
+    //document.querySelector("#cbTitle").innerHTML = msg;
     setTimeout(() => {  clean(); }, 5000);
 }
 
@@ -262,6 +291,8 @@ LoadFromFile = function()
 LoadStreamSession = function(data)
 {
     streamSession = new StreamSession();
+    
+    // loading users scores
     streamSession.UserSession = data.UserSession.map((o) => { 
         const newUser = new UserSession(); 
         for (const [key, value] of Object.entries(o)) 
@@ -269,6 +300,9 @@ LoadStreamSession = function(data)
             newUser[key] = value; 
         } return newUser; 
     });
+
+    // loading followers
+    streamSession.Followers = data.Followers;
 }
 
 

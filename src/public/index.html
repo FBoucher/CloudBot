@@ -2,14 +2,15 @@
     <head>
         <title>Cloud Stuff</title>
         <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
-        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="/public/secret.js"></script>
         <script src="/public/cloudbot.js"></script>
         <style>
             body, h1, p {
                 color: black;
-                font-size: 50px;
+                /*font-size: 50px;*/
                 background-color: whitesmoke;
                 }
 
@@ -52,7 +53,7 @@
                     ChatBotSay();
                 }
                 else if( flags.broadcaster && command === "cloud" ) {
-                    cloud();
+                    cloud("Thumbs-up");
                 }
                 else if( flags.broadcaster && command === "clean" ) {
                     console.log( "!clean was typed in chat" );
@@ -95,6 +96,10 @@
                     console.log( "...broadcaster message" );
                     ParseMessage(message);
                 }
+                else if( user === "Streamlabs") {
+                    console.log( "...Streamlabs message" );
+                    ParseMessage(message);
+                }
             }
 
             //
@@ -105,6 +110,5 @@
             ComfyJS.Init( "fboucheros", authToken );
             
           </script>
-          
     </body>
 </html>

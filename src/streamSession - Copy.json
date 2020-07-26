@@ -1,6 +1,13 @@
 {
   "UserSession": [
     {
+      "dropCount": 1,
+      "landedCount": 1,
+      "user": "vigneshr23",
+      "lastMessage": "",
+      "hightScore": "90.29"
+    },
+    {
       "dropCount": 3,
       "landedCount": 0,
       "user": "glasgowastro",
@@ -8,32 +15,11 @@
       "hightScore": 0
     },
     {
-      "dropCount": 1,
-      "landedCount": 0,
-      "user": "knglake23",
-      "lastMessage": "",
-      "hightScore": 0
-    },
-    {
-      "dropCount": 1,
-      "landedCount": 0,
-      "user": "ewerton_crazy",
-      "lastMessage": "",
-      "hightScore": 0
-    },
-    {
-      "dropCount": 1,
-      "landedCount": 0,
-      "user": "aliceatalla",
-      "lastMessage": "",
-      "hightScore": 0
-    },
-    {
       "dropCount": 4,
       "landedCount": 2,
-      "user": "majorgamergeek",
+      "user": "hyfss7vxwj",
       "lastMessage": "",
-      "hightScore": "28.82"
+      "hightScore": "74.78"
     },
     {
       "dropCount": 6,
@@ -43,18 +29,11 @@
       "hightScore": "5.34"
     },
     {
-      "dropCount": 5,
-      "landedCount": 3,
-      "user": "hyfss7vxwj",
-      "lastMessage": "",
-      "hightScore": "74.78"
-    },
-    {
       "dropCount": 1,
-      "landedCount": 1,
-      "user": "vigneshr23",
+      "landedCount": 0,
+      "user": "knglake23",
       "lastMessage": "",
-      "hightScore": "90.29"
+      "hightScore": 0
     },
     {
       "dropCount": 3,
@@ -66,7 +45,21 @@
     {
       "dropCount": 1,
       "landedCount": 0,
-      "user": "codewithsean",
+      "user": "ewerton_crazy",
+      "lastMessage": "",
+      "hightScore": 0
+    },
+    {
+      "dropCount": 4,
+      "landedCount": 2,
+      "user": "majorgamergeek",
+      "lastMessage": "",
+      "hightScore": "28.82"
+    },
+    {
+      "dropCount": 1,
+      "landedCount": 0,
+      "user": "aliceatalla",
       "lastMessage": "",
       "hightScore": 0
     }
@@ -79,8 +72,6 @@
     "shadow88a",
     "MoNoRHD",
     "ploverman",
-    "antonio_pazp",
-    "skyhoshi",
-    "maxscarfacestalker"
+    "antonio_pazp"
   ]
 }
