@@ -1,0 +1,35 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "FBoucher",
+      "name": "Frank Boucher",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2404846?v=4",
+      "profile": "http://cloud5mins.com",
+      "contributions": [
+        "doc",
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "surlydev",
+      "name": "SurlyDev",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/880671?v=4",
+      "profile": "https://github.com/surlydev",
+      "contributions": [
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "CloudBot",
+  "projectOwner": "FBoucher",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
