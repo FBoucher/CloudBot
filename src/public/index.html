@@ -38,6 +38,7 @@
         <div id="imageViewer"></div>
         
         <script type="text/javascript">
+            //import SoundEnum from './cloudbot.js';
 
             ComfyJS.onCommand = async ( user, command, message, flags, extra ) => {
                 
@@ -77,6 +78,21 @@
                 {
                     console.log( "!test was typed in chat" );
                     testing123(user);
+                }
+                else if( command === "yeah" ) 
+                {
+                    console.log( "!yeah was typed in chat" );
+                    playSound(SoundEnum.yeah);
+                }
+                else if( command === "bad" ) 
+                {
+                    console.log( "!bad was typed in chat" );
+                    playSound(SoundEnum.badFeeling);
+                }
+                else if( command === "bonjour" ) 
+                {
+                    console.log( "!bonjour was typed in chat" );
+                    playSound(SoundEnum.bonjourHi);
                 }
                 else if( flags.broadcaster && command === "save" ) 
                 {

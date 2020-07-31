@@ -25,6 +25,12 @@ class StreamSession
     }
 }
 
+const SoundEnum = {
+    yeah : "public/medias/yeah.mp3",
+    bonjourHi : "public/medias/BonjourHi.mp3",
+    badFeeling : "public/medias/badfeeling.mp3"
+};
+
 
 let streamSession = new StreamSession();
 
@@ -167,6 +173,7 @@ HightScoreParty = function(user, score){
     //ChatBotShout(msg);
     DisplayNotification("New high score!", msg);
     cloud("Yeah");
+    playSound(SoundEnum.yeah);
 }
 
 
@@ -305,7 +312,11 @@ LoadStreamSession = function(data)
     streamSession.Followers = data.Followers;
 }
 
-
+playSound = function(fileName)
+{
+    var audio = new Audio(fileName);
+    audio.play();
+}
 
 
 
