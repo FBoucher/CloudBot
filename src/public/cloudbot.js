@@ -1,6 +1,12 @@
 
 
-
+class Note
+{
+    constructor(text) {
+        this.time = new Date();
+        this.text = text;
+    }
+}
 
 class UserSession
 {
@@ -20,8 +26,12 @@ compareHightScore = function(a, b) {
 class StreamSession
 {
     constructor() {
+        this.Project;
+        this.DateTimeStart;
+        this.DateTimeEnd;
+        this.Notes = [];
         this.UserSession =  [];
-        this.Followers= [];
+        this.Followers = [];
     }
 }
 
@@ -318,13 +328,69 @@ playSound = function(fileName)
     audio.play();
 }
 
+StreamNoteStart = function(projectName)
+{
+    streamSession.Project = projectName;
+    streamSession.DateTimeStart = new Date();
+
+    LoadFromFile();
+}
 
 
+StreamNoteStop = function()
+{
+    SaveToFile();
+    let streamNotes = GenerateStreamNotes();
+    console.log('Notes: ', streamNotes);
+}
 
 
+GenerateStreamNotes = function()
+{
+    let streamNote = "";
+
+    //Project detail
+    streamNote += GenerateProjectInfo();
+
+    // Stream Details
+
+    
+    // Cloudies info
+    streamNote += GenerateCloudiesInfo();
+
+    // Goal extra
+
+    return streamNote;
+}
 
 
+GenerateProjectInfo = function()
+{
+    let projectSection = "##Project\n"
+    projectSection += "All the code for this project is available on GitHub: " + streamSession.projectName + " - https://github.com/FBoucher/" + streamSession.projectName + "n/";
 
+    return projectSection;
+}
+
+GenerateCloudiesInfo = function()
+{
+    let cloudiesSection = GenerateNewFollowerSection(); 
+
+    return cloudiesSection;
+}
+
+
+GenerateNewFollowerSection = function()
+{
+    let followerSection = "##New Followers\n"
+
+    for(c in StreamSession.Followers)
+    {
+        followerSection += `- [@${c}](https://www.twitch.tv/${c})\n`;
+    }
+
+    return followerSection;
+}
 
 
 
