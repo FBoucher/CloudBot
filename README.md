@@ -12,9 +12,21 @@ First it was a pretext to learn (or refresh) my JavaScript knowledge, but it bec
 Currently Available Commands
 ----------------------------
 
-- !stats: Display current user stats
-- !scores: (only broadcaster) display table of highest scores
-- !clean: (only broadcaster) hide/ clean all previous text in the screen
+Games:
+- **!stats**: Display current user stats
+
+Sounds:
+- **!bonjour**: play sound "Bonjour Hi"
+- **!bad**: play sound "Bonjour Hi"
+- **!yeah**: play sound "Yeeeeeeaaaah!"
+
+
+Only Broadcaster:
+- **!scores**: display table of highest scores
+- **!clean**: hide/ clean all previous text in the screen
+- **!load**: Load the file containing the previous session data.
+- **!save**: Save in a local file `streamSession.json` the current session data.
+- **!talk**: The bot will repete the message
 
 
 Upcomming Available Commands
@@ -26,9 +38,10 @@ Upcomming Available Commands
 How to use it
 -------------
 
-You just need to have the files `index.html`,  `chatbot.js`, and `secret.js` accessible (ex: locally, in an Azure Blob storage,etc.)
+The Cloudbot now required a server. A tiny one but it's not a static hmtl web page anymore. It's using Node.js. You can run it locally or host it somewhere (ex: Azure).
+If you decide to run it locally execute: `npm start` from inside the folder `src`.
 
-Make a new browser source overlay into your streaming tools (ex: OBS, StreamLabs OBS) and connect it to `index.html`.
+Make a new browser source overlay into your streaming tools (ex: OBS, StreamLabs OBS) and connect it to the root url where the server is running. (ex: `http://localhost:3000`.
 
 Create a file `secret.js` with the following code in it: 
 

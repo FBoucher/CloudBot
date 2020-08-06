@@ -51,7 +51,7 @@
                     ComfyJS.Disconnect();
                 }
                 else if( flags.broadcaster && command === "talk" ) {
-                    ChatBotSay();
+                    ChatBotSay(message);
                 }
                 else if( flags.broadcaster && command === "cloud" ) {
                     cloud("Thumbs-up");
