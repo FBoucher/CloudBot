@@ -25,6 +25,20 @@ compareHightScore = function(a, b) {
 
 class StreamSession
 {
+    Project = function(value)
+    {
+        this.Project = value;
+    }
+
+    Init = function(){
+        this.Project = "";
+        this.DateTimeStart = "";
+        this.DateTimeEnd = "";
+        this.Notes = [];
+        this.UserSession =  [];
+        this.Followers = [];
+    }
+
     constructor() {
         this.Project = "";
         this.DateTimeStart = "";
@@ -42,20 +56,17 @@ const SoundEnum = {
 };
 
 
-let streamSession = new StreamSession();
-
-
 getUserPosition = function(userName)
 {
     console.log( "... Searching for: " + userName );
-    for (i=0; i < streamSession.UserSession.length; i++) {
-        console.log( "... looking at : " + streamSession.UserSession[i].user );
-        if (streamSession.UserSession[i].user === userName) {
+    for (i=0; i < _streamSession.UserSession.length; i++) {
+        console.log( "... looking at : " + _streamSession.UserSession[i].user );
+        if (_streamSession.UserSession[i].user === userName) {
             console.log( "... found in position: " + i );
             return i;
         }
     }
-    streamSession.UserSession.push(new UserSession(userName));
+    _streamSession.UserSession.push(new UserSession(userName));
     return i++;
 }
 
@@ -93,7 +104,7 @@ scores = function()
 {
     console.log( "!scores was typed in chat" );
 
-    var sortedUsers = streamSession.UserSession.sort(compareHightScore);
+    var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
     for ( i=0; i < sortedUsers.length; i++) {
         const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
@@ -112,12 +123,12 @@ UserLanded = function(user, curScore)
 
     if(userPos >= 0)
     {
-        streamSession.UserSession[userPos].landedCount++;
+        _streamSession.UserSession[userPos].landedCount++;
 
-        if(streamSession.UserSession[userPos].hightScore < curScore)
+        if(_streamSession.UserSession[userPos].hightScore < curScore)
         {
             console.log( "... New highscore " + curScore);
-            streamSession.UserSession[userPos].hightScore = curScore;
+            _streamSession.UserSession[userPos].hightScore = curScore;
             HightScoreParty(user, curScore);
         }
         else{
@@ -147,7 +158,7 @@ ParseMessage = function(message)
     else if( message.startsWith("Thank you for following") )
     {
         let user = splitedMsg[4].toLowerCase().slice(0, -1);
-        streamSession.Followers.push(user);
+        _streamSession.Followers.push(user);
     }
 }
 
@@ -199,7 +210,7 @@ StatsFor = function(user){
 
     if(userPos >= 0)
     {
-        msg = `Tentative(s): ${streamSession.UserSession[userPos].dropCount} <br />Landed: ${streamSession.UserSession[userPos].landedCount} <br />Highest score: ${streamSession.UserSession[userPos].hightScore}`
+        msg = `Tentative(s): ${_streamSession.UserSession[userPos].dropCount} <br />Landed: ${_streamSession.UserSession[userPos].landedCount} <br />Highest score: ${_streamSession.UserSession[userPos].hightScore}`
     }
 
     //console.log( "... " + msg.replace(/<br \/>/g, "   "));
@@ -231,7 +242,7 @@ ChatBotShout = function(message)
 IncrementDropCounter = function(user)
 {
     let userPos = getUserPosition(user);
-    streamSession.UserSession[userPos].dropCount++;
+    _streamSession.UserSession[userPos].dropCount++;
 }
 
 
@@ -260,7 +271,7 @@ testing123 = function(user)
 
 SaveToFile = function()
 {
-    const data = {streamSession: streamSession};
+    const data = {streamSession: _streamSession};
     console.log('..c. data: ', data);
     const options = {
         method: 'POST',
@@ -282,7 +293,7 @@ SaveToFile = function()
 
 
 
-LoadFromFile = function()
+LoadFromFile = async function(projectName, callback)
 {
     
     const options = {
@@ -293,10 +304,10 @@ LoadFromFile = function()
     fetch('/loadfromfile', options)
     .then(response => response.json())
     .then(result => {
-        //console.log('Success:', result);
+        console.log('session reveived from server side:', result);
         //console.log('...Trace:', Object.values(result));
-        //streamSession = Object.values(result);
-        LoadStreamSession(result);
+        //_streamSession = Object.values(result);
+        LoadStreamSession(result, projectName, callback);
     })
     .catch(error => {
         console.error('Error:', error);
@@ -305,12 +316,12 @@ LoadFromFile = function()
 }
 
 
-LoadStreamSession = function(data)
+LoadStreamSession = function(data, projectName, callback)
 {
-    streamSession = new StreamSession();
+    _streamSession.Init();
     
     // loading users scores
-    streamSession.UserSession = data.UserSession.map((o) => { 
+    _streamSession.UserSession = data.UserSession.map((o) => { 
         const newUser = new UserSession(); 
         for (const [key, value] of Object.entries(o)) 
         { 
@@ -319,7 +330,12 @@ LoadStreamSession = function(data)
     });
 
     // loading followers
-    streamSession.Followers = data.Followers;
+    _streamSession.Followers = data.Followers;
+    
+    //console.log('done loading:', _streamSession);
+
+    if(callback !== undefined && callback !== null)
+        callback(projectName);
 }
 
 playSound = function(fileName)
@@ -328,13 +344,19 @@ playSound = function(fileName)
     audio.play();
 }
 
-StreamNoteStart = function(projectName)
+
+
+StreamNoteStart = async function(projectName)
 {
 
-    LoadFromFile();
-    streamSession.Project = projectName;
-    streamSession.DateTimeStart = new Date();
-    console.log('Success:', streamSession);
+    LoadFromFile(projectName, function(projectName){
+        //console.log('.. the project name: ', projectName);
+        //console.log('.. streamSession before : ', _streamSession);
+        _streamSession.Project = projectName;
+        _streamSession.DateTimeStart = new Date();
+        //console.log('.. streamSession just after : ', _streamSession);
+    });
+
 }
 
 
@@ -342,7 +364,7 @@ StreamNoteStop = function()
 {
     SaveToFile();
     let streamNotes = GenerateStreamNotes();
-    console.log('Notes: ', streamNotes);
+    //console.log('Notes: ', streamNotes);
     SaveNotesToFile(streamNotes);
 }
 
@@ -370,7 +392,7 @@ GenerateStreamNotes = function()
 GenerateProjectInfo = function()
 {
     let projectSection = "\n##Project\n"
-    projectSection += "All the code for this project is available on GitHub: " + streamSession.Project + " - https://github.com/FBoucher/" + streamSession.projectName + "\n";
+    projectSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
 
     return projectSection;
 }
@@ -388,7 +410,7 @@ GenerateNewFollowerSection = function()
 {
     let followerSection = "\n##New Followers\n"
 
-    for(userName of streamSession.Followers)
+    for(userName of _streamSession.Followers)
     {
         followerSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
     }
@@ -400,7 +422,7 @@ GenerateNewFollowerSection = function()
 
 SaveNotesToFile = function(streamNotes)
 {
-    const data = {project: streamSession.Project.replace(" ","-"), notes: streamNotes};
+    const data = {project: _streamSession.Project, notes: streamNotes};
     console.log('..g. data: ', data);
     const options = {
         method: 'POST',
@@ -418,9 +440,3 @@ SaveNotesToFile = function(streamNotes)
         console.error('Error:', error);
     });
 }
-
-
-
-
-
-

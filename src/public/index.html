@@ -28,7 +28,6 @@
                 border: 1px solid #cccccc; /* Change the border-color of cells here */
                 padding: 8px;
             }
-
         </style>
     </head>
     <body>
@@ -39,6 +38,8 @@
         
         <script type="text/javascript">
             //import SoundEnum from './cloudbot.js';
+
+            let _streamSession = new StreamSession();
 
             ComfyJS.onCommand = async ( user, command, message, flags, extra ) => {
                 
@@ -76,8 +77,8 @@
                 }
                 else if( flags.broadcaster && command === "test" ) 
                 {
-                    console.log( "!test was typed in chat" );
-                    testing123(user);
+                    console.log( "-->streamSession: ", _streamSession );
+                    //testing123(user);
                 }
                 else if( command === "yeah" ) 
                 {
