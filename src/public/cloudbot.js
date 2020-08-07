@@ -26,9 +26,9 @@ compareHightScore = function(a, b) {
 class StreamSession
 {
     constructor() {
-        this.Project;
-        this.DateTimeStart;
-        this.DateTimeEnd;
+        this.Project = "";
+        this.DateTimeStart = "";
+        this.DateTimeEnd = "";
         this.Notes = [];
         this.UserSession =  [];
         this.Followers = [];
@@ -293,8 +293,8 @@ LoadFromFile = function()
     fetch('/loadfromfile', options)
     .then(response => response.json())
     .then(result => {
-        console.log('Success:', result);
-        console.log('...Trace:', Object.values(result));
+        //console.log('Success:', result);
+        //console.log('...Trace:', Object.values(result));
         //streamSession = Object.values(result);
         LoadStreamSession(result);
     })
@@ -330,10 +330,11 @@ playSound = function(fileName)
 
 StreamNoteStart = function(projectName)
 {
-    streamSession.Project = projectName;
-    streamSession.DateTimeStart = new Date();
 
     LoadFromFile();
+    streamSession.Project = projectName;
+    streamSession.DateTimeStart = new Date();
+    console.log('Success:', streamSession);
 }
 
 
@@ -342,6 +343,7 @@ StreamNoteStop = function()
     SaveToFile();
     let streamNotes = GenerateStreamNotes();
     console.log('Notes: ', streamNotes);
+    SaveNotesToFile(streamNotes);
 }
 
 
@@ -364,13 +366,15 @@ GenerateStreamNotes = function()
 }
 
 
+
 GenerateProjectInfo = function()
 {
-    let projectSection = "##Project\n"
-    projectSection += "All the code for this project is available on GitHub: " + streamSession.projectName + " - https://github.com/FBoucher/" + streamSession.projectName + "n/";
+    let projectSection = "\n##Project\n"
+    projectSection += "All the code for this project is available on GitHub: " + streamSession.Project + " - https://github.com/FBoucher/" + streamSession.projectName + "\n";
 
     return projectSection;
 }
+
 
 GenerateCloudiesInfo = function()
 {
@@ -382,11 +386,11 @@ GenerateCloudiesInfo = function()
 
 GenerateNewFollowerSection = function()
 {
-    let followerSection = "##New Followers\n"
+    let followerSection = "\n##New Followers\n"
 
-    for(c in StreamSession.Followers)
+    for(userName of streamSession.Followers)
     {
-        followerSection += `- [@${c}](https://www.twitch.tv/${c})\n`;
+        followerSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
     }
 
     return followerSection;
@@ -394,6 +398,26 @@ GenerateNewFollowerSection = function()
 
 
 
+SaveNotesToFile = function(streamNotes)
+{
+    const data = {project: streamSession.Project.replace(" ","-"), notes: streamNotes};
+    console.log('..g. data: ', data);
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }
+
+    fetch('/genstreamnotes', options)
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+        ChatBotSay(result.msg);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 
 
