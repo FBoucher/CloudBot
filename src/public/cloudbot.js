@@ -19,6 +19,41 @@ class UserSession
     }
 }
 
+class Raider{
+
+    constructor(user, viewers) {
+        this.user = user;
+        this.viewers = viewers;
+    }
+}
+
+
+class Subscriber{
+
+    constructor(user, viewers) {
+        this.user = user;
+        this.streamMonths = streamMonths;
+    }
+}
+
+
+class Cheerer{
+
+    constructor(user, bits) {
+        this.user = user;
+        this.bits = bits;
+    }
+}
+
+class TimeLog{
+    
+    constructor(user, message, time) {
+        this.user = user;
+        this.message = message;
+        this.time = time;
+    }
+}
+
 compareHightScore = function(a, b) {
     return a.hightScore - b.hightScore;
 }
@@ -36,7 +71,12 @@ class StreamSession
         this.DateTimeEnd = "";
         this.Notes = [];
         this.UserSession =  [];
-        this.Followers = [];
+        this.NewFollowers = [];
+        this.Raiders = [];
+        this.Subscribers = [];
+        this.Hosts = [];
+        this.Cheerers = [];
+        this.TimeLogs = [];
     }
 
     constructor() {
@@ -45,7 +85,12 @@ class StreamSession
         this.DateTimeEnd = "";
         this.Notes = [];
         this.UserSession =  [];
-        this.Followers = [];
+        this.NewFollowers = [];
+        this.Raiders = [];
+        this.Subscribers = [];
+        this.Hosts = [];
+        this.Cheerers = [];
+        this.TimeLogs = [];
     }
 }
 
@@ -158,7 +203,7 @@ ParseMessage = function(message)
     else if( message.startsWith("Thank you for following") )
     {
         let user = splitedMsg[4].toLowerCase().slice(0, -1);
-        _streamSession.Followers.push(user);
+        _streamSession.NewFollowers.push(user);
     }
 }
 
@@ -293,7 +338,7 @@ SaveToFile = function()
 
 
 
-LoadFromFile = async function(projectName, callback)
+LoadFromFile = async function(projectName, isReload, callback)
 {
     
     const options = {
@@ -307,7 +352,7 @@ LoadFromFile = async function(projectName, callback)
         console.log('session reveived from server side:', result);
         //console.log('...Trace:', Object.values(result));
         //_streamSession = Object.values(result);
-        LoadStreamSession(result, projectName, callback);
+        LoadStreamSession(result, projectName, isReload, callback);
     })
     .catch(error => {
         console.error('Error:', error);
@@ -316,9 +361,15 @@ LoadFromFile = async function(projectName, callback)
 }
 
 
-LoadStreamSession = function(data, projectName, callback)
+LoadStreamSession = function(data, projectName, isReload, callback)
 {
     _streamSession.Init();
+
+    if(isReload == undefined || isReload == null){
+        isReload = false;
+        console.log('... this is not a reload!');
+    }
+        
     
     // loading users scores
     _streamSession.UserSession = data.UserSession.map((o) => { 
@@ -329,13 +380,31 @@ LoadStreamSession = function(data, projectName, callback)
         } return newUser; 
     });
 
-    // loading followers
-    _streamSession.Followers = data.Followers;
-    
-    //console.log('done loading:', _streamSession);
-
-    if(callback !== undefined && callback !== null)
+    if(callback !== undefined && callback !== null){
         callback(projectName);
+    }
+        
+    if(isReload){
+        // loading NewFollowers
+        _streamSession.NewFollowers = data.NewFollowers;
+
+        _streamSession.Raiders = data.Raiders.map((o) => { 
+            const newRaider = new Raiders(); 
+            for (const [key, value] of Object.entries(o)) 
+            { 
+                newRaider[key] = value; 
+            } return newRaider; 
+        });
+
+        _streamSession.Subscribers = data.Subscribers;
+        _streamSession.Hosts = data.Hosts;
+        _streamSession.Cheerers = data.Cheerers;
+        _streamSession.Project = data.Project;
+        _streamSession.DateTimeStart = data.DateTimeStart;
+    }
+
+
+    console.log('done loading:', _streamSession);
 }
 
 playSound = function(fileName)
@@ -349,7 +418,7 @@ playSound = function(fileName)
 StreamNoteStart = async function(projectName)
 {
 
-    LoadFromFile(projectName, function(projectName){
+    LoadFromFile(projectName, false, function(projectName){
         //console.log('.. the project name: ', projectName);
         //console.log('.. streamSession before : ', _streamSession);
         _streamSession.Project = projectName;
@@ -391,16 +460,21 @@ GenerateStreamNotes = function()
 
 GenerateProjectInfo = function()
 {
-    let projectSection = "\n##Project\n"
+    let projectSection = "\n## Project\n\n"
     projectSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
 
     return projectSection;
 }
 
 
+
 GenerateCloudiesInfo = function()
 {
     let cloudiesSection = GenerateNewFollowerSection(); 
+    cloudiesSection     += GenerateRaidersSection();
+    cloudiesSection     += GenerateHostSection();
+    cloudiesSection     += GenerateCheersSection();
+    cloudiesSection     += GenerateParachuteSection();
 
     return cloudiesSection;
 }
@@ -408,15 +482,89 @@ GenerateCloudiesInfo = function()
 
 GenerateNewFollowerSection = function()
 {
-    let followerSection = "\n##New Followers\n"
+    if(_streamSession.NewFollowers.length > 0){
+        let followerSection = "\n## New Followers\n\n"
 
-    for(userName of _streamSession.Followers)
-    {
-        followerSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
+        for(userName of _streamSession.NewFollowers)
+        {
+            followerSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
+        }
+
+        return followerSection;
+    }
+    return "";
+}
+
+
+GenerateRaidersSection = function()
+{
+    if(_streamSession.Raiders.length > 0){
+        let raidersSection = "\n## Raids\n\n"
+
+        for(raider of _streamSession.Raiders)
+        {
+            raidersSection += `- [@${raider.user}](https://www.twitch.tv/${raider.user}) has raided you with a party of ${raider.viewers}\n`;
+        }
+
+        return raidersSection;
     }
 
-    return followerSection;
+    return "";
 }
+
+
+GenerateHostSection = function()
+{
+    if(_streamSession.Hosts.length > 0){
+        let hostSection = "\n## Hosts\n\n"
+
+        for(userName of _streamSession.Hosts)
+        {
+            hostSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
+        }
+
+        return hostSection;
+    }
+    return "";
+}
+
+
+
+
+GenerateCheersSection = function()
+{
+    if(_streamSession.Cheerers.length > 0){
+        let cheerersSection = "\n## Cheers\n\n"
+
+        for(cheerer of _streamSession.Cheerers)
+        {
+            cheerersSection += `- [@${cheerer.user}](https://www.twitch.tv/${cheerer.user})  ${cheerer.bits} bits\n`;
+        }
+
+        return cheerersSection;
+    }
+
+    return "";
+}
+
+
+GenerateParachuteSection = function(){
+
+    if(_streamSession.UserSession.length > 0){
+        let parachuteSection = "\n## Game Results\n\n"
+
+        let sortedUsers = _streamSession.UserSession.sort(compareHightScore);
+
+        for ( i=0; i < sortedUsers.length; i++) {
+            parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
+        }
+        return parachuteSection;
+    }
+
+    return "";
+}
+
+
 
 
 
@@ -440,3 +588,54 @@ SaveNotesToFile = function(streamNotes)
         console.error('Error:', error);
     });
 }
+
+
+CreateTimeLog = function(message, user){
+
+    const now = new Date();
+    const startTime = Date.parse(_streamSession.DateTimeStart);
+    //console.log('startTime: ', startTime);
+
+    const msec = Math.abs(now - startTime);   
+    const seconds = Math.floor(msec / 1000);
+    const minutes = Math.floor(seconds / 60 );
+    const hours = Math.floor(minutes / 60 );
+    
+    const strHH = ("0" + hours% 60).substr(-2,2);
+    const strMM = ("0" + minutes% 60).substr(-2,2);
+    const strSS = ("0" + seconds% 60).substr(-2,2);
+    
+    const strTime = `${strHH}:${strMM}:${strSS}`
+ 
+    console.log('strTime: ', strTime);
+
+    _streamSession.TimeLogs.push(new TimeLog(user, message, new Date()));
+}
+
+
+
+// Twitch Events handling
+
+LogRaid = function(user, viewers){
+    
+    streamNote.Raiders.push(new Raider(user, viewers));
+}
+
+
+LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
+
+    cloud("Yeah");
+    playSound(SoundEnum.yeah);
+    streamNote.NewSubscribers.push(new Subscriber(user, streamMonths));
+}
+
+
+LogHost = function(user, viewers, autohost, extra ){
+    streamNote.Host.push(user);
+}
+
+
+LogCheer = function( user, message, bits, flags, extra ){
+    streamNote.Cheerers.push( new Cheerers(user, bits));
+}
+

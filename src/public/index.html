@@ -95,6 +95,11 @@
                     console.log( "!bonjour was typed in chat" );
                     playSound(SoundEnum.bonjourHi);
                 }
+                else if( command === "time" ) 
+                {
+                    console.log( "!time was typed in chat" );
+                    CreateTimeLog(message, user);
+                }
                 else if( flags.broadcaster && command === "save" ) 
                 {
                     console.log( "!save was typed in chat" );
@@ -103,7 +108,7 @@
                 else if( flags.broadcaster && command === "load" ) 
                 {
                     console.log( "!load was typed in chat" );
-                    LoadFromFile();
+                    LoadFromFile(null, true, null);
                 }
                 else if( flags.broadcaster && command === "start" ) 
                 {
@@ -128,6 +133,28 @@
                     ParseMessage(message);
                 }
             }
+
+            ComfyJS.onRaid = ( user, viewers, extra ) => {
+                LogRaid(user, viewers);
+            }
+
+            ComfyJS.onSub = ( user, message, subTierInfo, extra ) => {
+                LogSub(user, message, subTierInfo, 1, 0);
+            }
+
+            ComfyJS.onResub = ( user, message, streamMonths, cumulativeMonths, subTierInfo, extra  ) => {
+                LogSub(user, message, subTierInfo, streamMonths, cumulativeMonths);
+            }
+
+            ComfyJS.onHosted = ( user, viewers, autohost, extra ) => {
+                LogHost(user, viewers, autohost, extra );
+            }
+
+            ComfyJS.onCheer = (  user, message, bits, flags, extra ) => {
+                LogCheer( user, message, bits, flags, extra );
+            }
+
+
 
             //
             // Define a const authToken in secret.js get the token at

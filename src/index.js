@@ -78,7 +78,7 @@ app.post("/genstreamnotes", (req, res) => {
     console.log("..g.");
     console.log("..project name: " + req.body.project);
 
-    let filename = dateFormat(new Date(), "yyyy-mm-dd");
+    let filename = dateFormat(new Date(), "yyyy-mm-dd_HHmmss");
     filename += `-${req.body.project}.md`;
 
     console.log("..filename: " +  filename);
@@ -105,3 +105,4 @@ app.post("/genstreamnotes", (req, res) => {
 
 //test
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
+
