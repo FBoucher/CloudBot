@@ -446,7 +446,7 @@ GenerateStreamNotes = function()
     streamNote += GenerateProjectInfo();
 
     // Stream Details
-
+    streamNote += GenerateTimeLogSection();
     
     // Cloudies info
     streamNote += GenerateCloudiesInfo();
@@ -548,6 +548,23 @@ GenerateCheersSection = function()
 }
 
 
+GenerateTimeLogSection = function()
+{
+    if(_streamSession.TimeLogs.length > 0){
+        let timeLogsSection = "\n## TimeLogs\n\n"
+
+        for(timeLog of _streamSession.TimeLogs)
+        {
+            timeLogsSection += `- ${timeLog.time} ${timeLog.message}\n`;
+        }
+
+        return timeLogsSection;
+    }
+
+    return "";
+}
+
+
 GenerateParachuteSection = function(){
 
     if(_streamSession.UserSession.length > 0){
@@ -609,7 +626,7 @@ CreateTimeLog = function(message, user){
  
     console.log('strTime: ', strTime);
 
-    _streamSession.TimeLogs.push(new TimeLog(user, message, new Date()));
+    _streamSession.TimeLogs.push(new TimeLog(user, message, strTime));
 }
 
 
