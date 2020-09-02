@@ -1,6 +1,12 @@
 
 
-
+class Note
+{
+    constructor(text) {
+        this.time = new Date();
+        this.text = text;
+    }
+}
 
 class UserSession
 {
@@ -13,15 +19,78 @@ class UserSession
     }
 }
 
+class Raider{
+
+    constructor(user, viewers) {
+        this.user = user;
+        this.viewers = viewers;
+    }
+}
+
+
+class Subscriber{
+
+    constructor(user, viewers) {
+        this.user = user;
+        this.streamMonths = streamMonths;
+    }
+}
+
+
+class Cheerer{
+
+    constructor(user, bits) {
+        this.user = user;
+        this.bits = bits;
+    }
+}
+
+class TimeLog{
+    
+    constructor(user, message, time) {
+        this.user = user;
+        this.message = message;
+        this.time = time;
+    }
+}
+
 compareHightScore = function(a, b) {
     return a.hightScore - b.hightScore;
 }
 
 class StreamSession
 {
-    constructor() {
+    Project = function(value)
+    {
+        this.Project = value;
+    }
+
+    Init = function(){
+        this.Project = "";
+        this.DateTimeStart = "";
+        this.DateTimeEnd = "";
+        this.Notes = [];
         this.UserSession =  [];
-        this.Followers= [];
+        this.NewFollowers = [];
+        this.Raiders = [];
+        this.Subscribers = [];
+        this.Hosts = [];
+        this.Cheerers = [];
+        this.TimeLogs = [];
+    }
+
+    constructor() {
+        this.Project = "";
+        this.DateTimeStart = "";
+        this.DateTimeEnd = "";
+        this.Notes = [];
+        this.UserSession =  [];
+        this.NewFollowers = [];
+        this.Raiders = [];
+        this.Subscribers = [];
+        this.Hosts = [];
+        this.Cheerers = [];
+        this.TimeLogs = [];
     }
 }
 
@@ -32,20 +101,17 @@ const SoundEnum = {
 };
 
 
-let streamSession = new StreamSession();
-
-
 getUserPosition = function(userName)
 {
     console.log( "... Searching for: " + userName );
-    for (i=0; i < streamSession.UserSession.length; i++) {
-        console.log( "... looking at : " + streamSession.UserSession[i].user );
-        if (streamSession.UserSession[i].user === userName) {
+    for (i=0; i < _streamSession.UserSession.length; i++) {
+        console.log( "... looking at : " + _streamSession.UserSession[i].user );
+        if (_streamSession.UserSession[i].user === userName) {
             console.log( "... found in position: " + i );
             return i;
         }
     }
-    streamSession.UserSession.push(new UserSession(userName));
+    _streamSession.UserSession.push(new UserSession(userName));
     return i++;
 }
 
@@ -83,7 +149,7 @@ scores = function()
 {
     console.log( "!scores was typed in chat" );
 
-    var sortedUsers = streamSession.UserSession.sort(compareHightScore);
+    var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
     for ( i=0; i < sortedUsers.length; i++) {
         const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
@@ -102,12 +168,12 @@ UserLanded = function(user, curScore)
 
     if(userPos >= 0)
     {
-        streamSession.UserSession[userPos].landedCount++;
+        _streamSession.UserSession[userPos].landedCount++;
 
-        if(streamSession.UserSession[userPos].hightScore < curScore)
+        if(_streamSession.UserSession[userPos].hightScore < curScore)
         {
             console.log( "... New highscore " + curScore);
-            streamSession.UserSession[userPos].hightScore = curScore;
+            _streamSession.UserSession[userPos].hightScore = curScore;
             HightScoreParty(user, curScore);
         }
         else{
@@ -137,7 +203,7 @@ ParseMessage = function(message)
     else if( message.startsWith("Thank you for following") )
     {
         let user = splitedMsg[4].toLowerCase().slice(0, -1);
-        streamSession.Followers.push(user);
+        _streamSession.NewFollowers.push(user);
     }
 }
 
@@ -189,7 +255,7 @@ StatsFor = function(user){
 
     if(userPos >= 0)
     {
-        msg = `Tentative(s): ${streamSession.UserSession[userPos].dropCount} <br />Landed: ${streamSession.UserSession[userPos].landedCount} <br />Highest score: ${streamSession.UserSession[userPos].hightScore}`
+        msg = `Tentative(s): ${_streamSession.UserSession[userPos].dropCount} <br />Landed: ${_streamSession.UserSession[userPos].landedCount} <br />Highest score: ${_streamSession.UserSession[userPos].hightScore}`
     }
 
     //console.log( "... " + msg.replace(/<br \/>/g, "   "));
@@ -221,7 +287,7 @@ ChatBotShout = function(message)
 IncrementDropCounter = function(user)
 {
     let userPos = getUserPosition(user);
-    streamSession.UserSession[userPos].dropCount++;
+    _streamSession.UserSession[userPos].dropCount++;
 }
 
 
@@ -250,7 +316,7 @@ testing123 = function(user)
 
 SaveToFile = function()
 {
-    const data = {streamSession: streamSession};
+    const data = {streamSession: _streamSession};
     console.log('..c. data: ', data);
     const options = {
         method: 'POST',
@@ -272,7 +338,7 @@ SaveToFile = function()
 
 
 
-LoadFromFile = function()
+LoadFromFile = async function(projectName, isReload, callback)
 {
     
     const options = {
@@ -283,10 +349,10 @@ LoadFromFile = function()
     fetch('/loadfromfile', options)
     .then(response => response.json())
     .then(result => {
-        console.log('Success:', result);
-        console.log('...Trace:', Object.values(result));
-        //streamSession = Object.values(result);
-        LoadStreamSession(result);
+        console.log('session reveived from server side:', result);
+        //console.log('...Trace:', Object.values(result));
+        //_streamSession = Object.values(result);
+        LoadStreamSession(result, projectName, isReload, callback);
     })
     .catch(error => {
         console.error('Error:', error);
@@ -295,12 +361,18 @@ LoadFromFile = function()
 }
 
 
-LoadStreamSession = function(data)
+LoadStreamSession = function(data, projectName, isReload, callback)
 {
-    streamSession = new StreamSession();
+    _streamSession.Init();
+
+    if(isReload == undefined || isReload == null){
+        isReload = false;
+        console.log('... this is not a reload!');
+    }
+        
     
     // loading users scores
-    streamSession.UserSession = data.UserSession.map((o) => { 
+    _streamSession.UserSession = data.UserSession.map((o) => { 
         const newUser = new UserSession(); 
         for (const [key, value] of Object.entries(o)) 
         { 
@@ -308,8 +380,31 @@ LoadStreamSession = function(data)
         } return newUser; 
     });
 
-    // loading followers
-    streamSession.Followers = data.Followers;
+    if(callback !== undefined && callback !== null){
+        callback(projectName);
+    }
+        
+    if(isReload){
+        // loading NewFollowers
+        _streamSession.NewFollowers = data.NewFollowers;
+
+        _streamSession.Raiders = data.Raiders.map((o) => { 
+            const newRaider = new Raiders(); 
+            for (const [key, value] of Object.entries(o)) 
+            { 
+                newRaider[key] = value; 
+            } return newRaider; 
+        });
+
+        _streamSession.Subscribers = data.Subscribers;
+        _streamSession.Hosts = data.Hosts;
+        _streamSession.Cheerers = data.Cheerers;
+        _streamSession.Project = data.Project;
+        _streamSession.DateTimeStart = data.DateTimeStart;
+    }
+
+
+    console.log('done loading:', _streamSession);
 }
 
 playSound = function(fileName)
@@ -320,17 +415,244 @@ playSound = function(fileName)
 
 
 
+StreamNoteStart = async function(projectName)
+{
+
+    LoadFromFile(projectName, false, function(projectName){
+        //console.log('.. the project name: ', projectName);
+        //console.log('.. streamSession before : ', _streamSession);
+        _streamSession.Project = projectName;
+        _streamSession.DateTimeStart = new Date();
+        //console.log('.. streamSession just after : ', _streamSession);
+    });
+
+}
+
+
+StreamNoteStop = function()
+{
+    SaveToFile();
+    let streamNotes = GenerateStreamNotes();
+    //console.log('Notes: ', streamNotes);
+    SaveNotesToFile(streamNotes);
+}
+
+
+GenerateStreamNotes = function()
+{
+    let streamNote = "";
+
+    //Project detail
+    streamNote += GenerateProjectInfo();
+
+    // Stream Details
+    streamNote += GenerateTimeLogSection();
+    
+    // Cloudies info
+    streamNote += GenerateCloudiesInfo();
+
+    // Goal extra
+
+    return streamNote;
+}
+
+
+
+GenerateProjectInfo = function()
+{
+    let projectSection = "\n## Project\n\n"
+    projectSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
+
+    return projectSection;
+}
+
+
+
+GenerateCloudiesInfo = function()
+{
+    let cloudiesSection = GenerateNewFollowerSection(); 
+    cloudiesSection     += GenerateRaidersSection();
+    cloudiesSection     += GenerateHostSection();
+    cloudiesSection     += GenerateCheersSection();
+    cloudiesSection     += GenerateParachuteSection();
+
+    return cloudiesSection;
+}
+
+
+GenerateNewFollowerSection = function()
+{
+    if(_streamSession.NewFollowers.length > 0){
+        let followerSection = "\n## New Followers\n\n"
+
+        for(userName of _streamSession.NewFollowers)
+        {
+            followerSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
+        }
+
+        return followerSection;
+    }
+    return "";
+}
+
+
+GenerateRaidersSection = function()
+{
+    if(_streamSession.Raiders.length > 0){
+        let raidersSection = "\n## Raids\n\n"
+
+        for(raider of _streamSession.Raiders)
+        {
+            raidersSection += `- [@${raider.user}](https://www.twitch.tv/${raider.user}) has raided you with a party of ${raider.viewers}\n`;
+        }
+
+        return raidersSection;
+    }
+
+    return "";
+}
+
+
+GenerateHostSection = function()
+{
+    if(_streamSession.Hosts.length > 0){
+        let hostSection = "\n## Hosts\n\n"
+
+        for(userName of _streamSession.Hosts)
+        {
+            hostSection += `- [@${userName}](https://www.twitch.tv/${userName})\n`;
+        }
+
+        return hostSection;
+    }
+    return "";
+}
+
+
+
+
+GenerateCheersSection = function()
+{
+    if(_streamSession.Cheerers.length > 0){
+        let cheerersSection = "\n## Cheers\n\n"
+
+        for(cheerer of _streamSession.Cheerers)
+        {
+            cheerersSection += `- [@${cheerer.user}](https://www.twitch.tv/${cheerer.user})  ${cheerer.bits} bits\n`;
+        }
+
+        return cheerersSection;
+    }
+
+    return "";
+}
+
+
+GenerateTimeLogSection = function()
+{
+    if(_streamSession.TimeLogs.length > 0){
+        let timeLogsSection = "\n## TimeLogs\n\n"
+
+        for(timeLog of _streamSession.TimeLogs)
+        {
+            timeLogsSection += `- ${timeLog.time} ${timeLog.message}\n`;
+        }
+
+        return timeLogsSection;
+    }
+
+    return "";
+}
+
+
+GenerateParachuteSection = function(){
+
+    if(_streamSession.UserSession.length > 0){
+        let parachuteSection = "\n## Game Results\n\n"
+
+        let sortedUsers = _streamSession.UserSession.sort(compareHightScore);
+
+        for ( i=0; i < sortedUsers.length; i++) {
+            parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
+        }
+        return parachuteSection;
+    }
+
+    return "";
+}
 
 
 
 
 
+SaveNotesToFile = function(streamNotes)
+{
+    const data = {project: _streamSession.Project, notes: streamNotes};
+    console.log('..g. data: ', data);
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }
+
+    fetch('/genstreamnotes', options)
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+        ChatBotSay(result.msg);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+CreateTimeLog = function(message, user){
+
+    const now = new Date();
+    const startTime = Date.parse(_streamSession.DateTimeStart);
+    //console.log('startTime: ', startTime);
+
+    const msec = Math.abs(now - startTime);   
+    const seconds = Math.floor(msec / 1000);
+    const minutes = Math.floor(seconds / 60 );
+    const hours = Math.floor(minutes / 60 );
+    
+    const strHH = ("0" + hours% 60).substr(-2,2);
+    const strMM = ("0" + minutes% 60).substr(-2,2);
+    const strSS = ("0" + seconds% 60).substr(-2,2);
+    
+    const strTime = `${strHH}:${strMM}:${strSS}`
+ 
+    console.log('strTime: ', strTime);
+
+    _streamSession.TimeLogs.push(new TimeLog(user, message, strTime));
+}
 
 
 
+// Twitch Events handling
+
+LogRaid = function(user, viewers){
+    
+    streamNote.Raiders.push(new Raider(user, viewers));
+}
 
 
+LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
+
+    cloud("Yeah");
+    playSound(SoundEnum.yeah);
+    streamNote.NewSubscribers.push(new Subscriber(user, streamMonths));
+}
 
 
+LogHost = function(user, viewers, autohost, extra ){
+    streamNote.Host.push(user);
+}
 
+
+LogCheer = function( user, message, bits, flags, extra ){
+    streamNote.Cheerers.push( new Cheerers(user, bits));
+}
 

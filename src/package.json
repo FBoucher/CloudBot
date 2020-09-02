@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/FBoucher/CloudBot#readme",
   "dependencies": {
+    "dateformat": "^3.0.3",
     "express": "^4.17.1",
     "toastr": "^2.1.4"
   },

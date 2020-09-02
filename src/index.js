@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const fs = require('fs');
+const dateFormat = require('dateformat');
 const app = express()
 const port = 3000
 
@@ -51,7 +52,7 @@ app.post("/savetofile", (req, res) => {
 
 
 app.get("/loadfromfile", (req, res) => {
-    console.log("..s.")
+    console.log("..l.")
 
     if(true){
 
@@ -72,5 +73,36 @@ app.get("/loadfromfile", (req, res) => {
 
 })
 
+ 
+app.post("/genstreamnotes", (req, res) => {
+    console.log("..g.");
+    console.log("..project name: " + req.body.project);
 
+    let filename = dateFormat(new Date(), "yyyy-mm-dd_HHmmss");
+    filename += `-${req.body.project}.md`;
+
+    console.log("..filename: " +  filename);
+
+    if(req.body && req.body.notes){
+
+        console.log(req.body.notes)
+
+        //const data = JSON.stringify(req.body.notes,null, 2)
+        const data = req.body.notes;
+        fs.writeFile(filename, data, (err) => {
+            if (err) {
+                res.json({error:err}) 
+            }
+            console.log("Notes saved.");
+            res.send({"msg":"Notes saved."})
+        });
+    }
+    else{
+        res.json({error:"no data"}) 
+    }
+
+})
+
+//test
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
+

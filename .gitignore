@@ -120,3 +120,6 @@ src/secret.js
 src/public/secret.js
 
 src/.vscode/settings.json
+src/streamSession.json
+src/streamSession_backup.json
+src/streamSession.json
