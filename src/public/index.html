@@ -61,7 +61,7 @@
                     console.log( "!clean was typed in chat" );
                     clean();
                 }
-                else if( flags.broadcaster && command === "scores" ) 
+                else if( command === "scores" ) 
                 {
                     scores();
                 }
@@ -119,6 +119,11 @@
                 {
                     console.log( "!stop was typed in chat" );
                     StreamNoteStop();
+                }
+                else if( command === "note" ) 
+                {
+                    console.log( "!note was typed in chat" );
+                    SavingNote(message);
                 }
             }
 

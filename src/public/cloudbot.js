@@ -11,6 +11,7 @@ class Note
 class UserSession
 {
     constructor(user) {
+        this.lastUpdate = "";
         this.dropCount = 0;
         this.landedCount = 0;
         this.user = user;
@@ -148,18 +149,36 @@ sleep = function (ms) {
 scores = function()
 {
     console.log( "!scores was typed in chat" );
+    const today = new Date();
 
     var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
     for ( i=0; i < sortedUsers.length; i++) {
-        const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
-        console.log( "... pre Showing: " + sortedUsers[i].user);
-        setTimeout(() => {
-            DisplayNotification( msg );
-        }, i * 1000); 
+        if(isSameDay(today, Date.parse(sortedUsers[i].lastUpdate))){
+            const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
+            console.log( "... pre Showing: " + sortedUsers[i].user);
+            setTimeout(() => {
+                DisplayNotification( msg );
+            }, i * 1000); 
+        }
+        else{
+            console.log( `... Skipping ${sortedUsers[i].user}, didn't play today.`);
+        }
     }
 }
 
+
+isSameDay = function(d1, d2) {
+
+    // if((d1 instanceof Date) && (d2 instanceof Date)){
+    //     return d1.getFullYear() === d2.getFullYear() &&
+    //     d1.getMonth() === d2.getMonth() &&
+    //     d1.getDate() === d2.getDate();
+    // }
+    // console.log( `... d1: ${d1} --- d2: ${d1}`);
+    // return false;
+    return true;
+}
 
 
 UserLanded = function(user, curScore)
@@ -288,6 +307,7 @@ IncrementDropCounter = function(user)
 {
     let userPos = getUserPosition(user);
     _streamSession.UserSession[userPos].dropCount++;
+    _streamSession.UserSession[userPos].lastUpdate = new Date();
 }
 
 
@@ -389,11 +409,19 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         _streamSession.NewFollowers = data.NewFollowers;
 
         _streamSession.Raiders = data.Raiders.map((o) => { 
-            const newRaider = new Raiders(); 
+            const newRaider = new Raider(); 
             for (const [key, value] of Object.entries(o)) 
             { 
                 newRaider[key] = value; 
             } return newRaider; 
+        });
+
+        _streamSession.TimeLogs = data.TimeLogs.map((o) => { 
+            const newTimeLog = new TimeLog(); 
+            for (const [key, value] of Object.entries(o)) 
+            { 
+                newTimeLog[key] = value; 
+            } return newTimeLog; 
         });
 
         _streamSession.Subscribers = data.Subscribers;
@@ -401,6 +429,7 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         _streamSession.Cheerers = data.Cheerers;
         _streamSession.Project = data.Project;
         _streamSession.DateTimeStart = data.DateTimeStart;
+        _streamSession.Notes = data.Notes;
     }
 
 
@@ -432,28 +461,28 @@ StreamNoteStart = async function(projectName)
 StreamNoteStop = function()
 {
     SaveToFile();
-    let streamNotes = GenerateStreamNotes();
-    //console.log('Notes: ', streamNotes);
-    SaveNotesToFile(streamNotes);
+    let _streamSessions = Generate_streamSessions();
+    //console.log('Notes: ', _streamSessions);
+    SaveNotesToFile(_streamSessions);
 }
 
 
-GenerateStreamNotes = function()
+Generate_streamSessions = function()
 {
-    let streamNote = "";
+    let _streamSession = "";
 
     //Project detail
-    streamNote += GenerateProjectInfo();
+    _streamSession += GenerateProjectInfo();
 
     // Stream Details
-    streamNote += GenerateTimeLogSection();
+    _streamSession += GenerateTimeLogSection();
     
     // Cloudies info
-    streamNote += GenerateCloudiesInfo();
+    _streamSession += GenerateCloudiesInfo();
 
     // Goal extra
-
-    return streamNote;
+    _streamSession += GenerateExtraInfo();
+    return _streamSession;
 }
 
 
@@ -568,12 +597,15 @@ GenerateTimeLogSection = function()
 GenerateParachuteSection = function(){
 
     if(_streamSession.UserSession.length > 0){
+        const today = new Date();
         let parachuteSection = "\n## Game Results\n\n"
-
+        
         let sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
         for ( i=0; i < sortedUsers.length; i++) {
-            parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
+            if(isSameDay(today, Date.parse(sortedUsers[i].lastUpdate))){
+                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
+            }
         }
         return parachuteSection;
     }
@@ -582,12 +614,25 @@ GenerateParachuteSection = function(){
 }
 
 
+GenerateExtraInfo = function(){
+
+    if(_streamSession.Notes.length > 0){
+        let noteSection = "\n## Notes/ References / Snippets\n\n"
+
+        for(note of _streamSession.Notes){
+            noteSection += `- ${note}\n`;
+        }
+        return noteSection;
+    }
+
+    return "";
+}
 
 
 
-SaveNotesToFile = function(streamNotes)
+SaveNotesToFile = function(_streamSessions)
 {
-    const data = {project: _streamSession.Project, notes: streamNotes};
+    const data = {project: _streamSession.Project, notes: _streamSessions};
     console.log('..g. data: ', data);
     const options = {
         method: 'POST',
@@ -629,13 +674,17 @@ CreateTimeLog = function(message, user){
     _streamSession.TimeLogs.push(new TimeLog(user, message, strTime));
 }
 
+SavingNote = function(message){
+    _streamSession.Notes.push(message);
+}
+
 
 
 // Twitch Events handling
 
 LogRaid = function(user, viewers){
     
-    streamNote.Raiders.push(new Raider(user, viewers));
+    _streamSession.Raiders.push(new Raider(user, viewers));
 }
 
 
@@ -643,16 +692,16 @@ LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
 
     cloud("Yeah");
     playSound(SoundEnum.yeah);
-    streamNote.NewSubscribers.push(new Subscriber(user, streamMonths));
+    _streamSession.NewSubscribers.push(new Subscriber(user, streamMonths));
 }
 
 
 LogHost = function(user, viewers, autohost, extra ){
-    streamNote.Host.push(user);
+    _streamSession.Hosts.push(user);
 }
 
 
 LogCheer = function( user, message, bits, flags, extra ){
-    streamNote.Cheerers.push( new Cheerers(user, bits));
+    _streamSession.Cheerers.push( new Cheerers(user, bits));
 }
 
