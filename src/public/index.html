@@ -56,7 +56,21 @@
                 if( command === "shout" ) {
                     ChatBotShout(message);
                 }
-                else if( command === "scores" ) 
+
+                else if( flags.broadcaster && command === "ok-bye" ) {
+                    ComfyJS.Disconnect();
+                }
+                else if( flags.broadcaster && command === "talk" ) {
+                    ChatBotSay(message);
+                }
+                else if( flags.broadcaster && command === "cloud" ) {
+                    cloud("Thumbs-up");
+                }
+                else if( flags.broadcaster && command === "clean" ) {
+                    console.log( "!clean was typed in chat" );
+                    clean();
+                }
+                else if(command === "scores" ) 
                 {
                     scores();
                 }
