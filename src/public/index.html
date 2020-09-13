@@ -28,6 +28,10 @@
                 border: 1px solid #cccccc; /* Change the border-color of cells here */
                 padding: 8px;
             }
+
+            .toast-title{
+                font-size: 200%;
+            }
         </style>
     </head>
     <body>
@@ -80,6 +84,9 @@
                     console.log( "-->streamSession: ", _streamSession );
                     //testing123(user);
                 }
+
+                //== SOUNDS Section =====================================
+                //== 
                 else if( command === "yeah" ) 
                 {
                     console.log( "!yeah was typed in chat" );
@@ -95,6 +102,14 @@
                     console.log( "!bonjour was typed in chat" );
                     playSound(SoundEnum.bonjourHi);
                 }
+                else if( command === "knock" ) 
+                {
+                    console.log( "!knock was typed in chat" );
+                    playSound(SoundEnum.doorknock);
+                }
+                //== 
+                //=====================================================
+
                 else if( command === "time" ) 
                 {
                     console.log( "!time was typed in chat" );

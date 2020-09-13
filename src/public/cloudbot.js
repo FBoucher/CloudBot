@@ -98,7 +98,8 @@ class StreamSession
 const SoundEnum = {
     yeah : "public/medias/yeah.mp3",
     bonjourHi : "public/medias/BonjourHi.mp3",
-    badFeeling : "public/medias/badfeeling.mp3"
+    badFeeling : "public/medias/badfeeling.mp3",
+    doorknock: "public/medias/knocking-on-door.mp3"
 };
 
 
@@ -150,34 +151,34 @@ scores = function()
 {
     console.log( "!scores was typed in chat" );
     const today = new Date();
+    let cntScoreDisplayed = 1;
 
     var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
-
+    
     for ( i=0; i < sortedUsers.length; i++) {
-        if(isSameDay(today, Date.parse(sortedUsers[i].lastUpdate))){
+        //console.log(`... checking: ${sortedUsers[i].user} --- d2: ${sortedUsers[i].lastUpdate}`);
+
+        if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
             const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
-            console.log( "... pre Showing: " + sortedUsers[i].user);
             setTimeout(() => {
                 DisplayNotification( msg );
-            }, i * 1000); 
+            }, cntScoreDisplayed++ * 1000); 
         }
-        else{
-            console.log( `... Skipping ${sortedUsers[i].user}, didn't play today.`);
-        }
+        // else{
+        //     console.log( `... Skipping ${sortedUsers[i].user}, didn't play today.`);
+        // }
     }
 }
 
 
 isSameDay = function(d1, d2) {
 
-    // if((d1 instanceof Date) && (d2 instanceof Date)){
-    //     return d1.getFullYear() === d2.getFullYear() &&
-    //     d1.getMonth() === d2.getMonth() &&
-    //     d1.getDate() === d2.getDate();
-    // }
-    // console.log( `... d1: ${d1} --- d2: ${d1}`);
-    // return false;
-    return true;
+    if((d1 instanceof Date) && (d2 instanceof Date)){
+        return d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
+    }
+    return false;
 }
 
 
@@ -234,7 +235,7 @@ DisplayNotification = function(title, message)
         "debug": false,
         "newestOnTop": false,
         "progressBar": true,
-        "positionClass": "toast-top-right",
+        "positionClass": "toast-top-full-width",
         "preventDuplicates": false,
         "onclick": null,
         "showDuration": "300",
@@ -600,10 +601,10 @@ GenerateParachuteSection = function(){
         const today = new Date();
         let parachuteSection = "\n## Game Results\n\n"
         
-        let sortedUsers = _streamSession.UserSession.sort(compareHightScore);
+        var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
         for ( i=0; i < sortedUsers.length; i++) {
-            if(isSameDay(today, Date.parse(sortedUsers[i].lastUpdate))){
+            if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
                 parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
             }
         }
