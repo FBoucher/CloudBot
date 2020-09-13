@@ -28,6 +28,10 @@
                 border: 1px solid #cccccc; /* Change the border-color of cells here */
                 padding: 8px;
             }
+
+            .toast-title{
+                font-size: 200%;
+            }
         </style>
     </head>
     <body>
@@ -45,9 +49,14 @@
                 
                 user = user.toLowerCase();
 
+                //== PUBLIC Commands Section =====================================
+                //== 
+
+                //-- fun ---------
                 if( command === "shout" ) {
                     ChatBotShout(message);
                 }
+
                 else if( flags.broadcaster && command === "ok-bye" ) {
                     ComfyJS.Disconnect();
                 }
@@ -61,7 +70,7 @@
                     console.log( "!clean was typed in chat" );
                     clean();
                 }
-                else if( flags.broadcaster && command === "scores" ) 
+                else if(command === "scores" ) 
                 {
                     scores();
                 }
@@ -75,30 +84,39 @@
                     console.log( "!drop was typed in chat" );
                     IncrementDropCounter(user);
                 }
-                else if( flags.broadcaster && command === "test" ) 
-                {
-                    console.log( "-->streamSession: ", _streamSession );
-                    //testing123(user);
-                }
-                else if( command === "yeah" ) 
-                {
-                    console.log( "!yeah was typed in chat" );
-                    playSound(SoundEnum.yeah);
-                }
-                else if( command === "bad" ) 
-                {
-                    console.log( "!bad was typed in chat" );
-                    playSound(SoundEnum.badFeeling);
-                }
-                else if( command === "bonjour" ) 
-                {
-                    console.log( "!bonjour was typed in chat" );
-                    playSound(SoundEnum.bonjourHi);
-                }
+
+                //-- tools ---------
                 else if( command === "time" ) 
                 {
                     console.log( "!time was typed in chat" );
                     CreateTimeLog(message, user);
+                }
+                else if( command === "note" ) 
+                {
+                    console.log( "!note was typed in chat" );
+                    SavingNote(message);
+                }
+
+
+                //== SOUNDS Section =====================================
+                //== 
+                else if( flags.broadcaster && command === "ok-bye" ) {
+                    ComfyJS.Disconnect();
+                }
+                else if( flags.broadcaster && command === "talk" ) {
+                    ChatBotSay();
+                }
+                else if( flags.broadcaster && command === "cloud" ) {
+                    cloud("Thumbs-up");
+                }
+                else if( flags.broadcaster && command === "clean" ) {
+                    console.log( "!clean was typed in chat" );
+                    clean();
+                }
+                else if( flags.broadcaster && command === "test" ) 
+                {
+                    console.log( "-->streamSession: ", _streamSession );
+                    //testing123(user);
                 }
                 else if( flags.broadcaster && command === "save" ) 
                 {
@@ -120,6 +138,34 @@
                     console.log( "!stop was typed in chat" );
                     StreamNoteStop();
                 }
+
+                //=====================================================
+
+
+                //== SOUNDS Section =====================================
+                //== 
+                else if( command === "yeah" ) 
+                {
+                    console.log( "!yeah was typed in chat" );
+                    playSound(SoundEnum.yeah);
+                }
+                else if( command === "bad" ) 
+                {
+                    console.log( "!bad was typed in chat" );
+                    playSound(SoundEnum.badFeeling);
+                }
+                else if( command === "bonjour" ) 
+                {
+                    console.log( "!bonjour was typed in chat" );
+                    playSound(SoundEnum.bonjourHi);
+                }
+                else if( command === "knock" ) 
+                {
+                    console.log( "!knock was typed in chat" );
+                    playSound(SoundEnum.doorknock);
+                }
+
+                //=====================================================
             }
 
             ComfyJS.onChat = ( user, message, flags, self, extra ) => {
@@ -134,6 +180,8 @@
                 }
             }
 
+            //== Events Section =====================================
+            //== 
             ComfyJS.onRaid = ( user, viewers, extra ) => {
                 LogRaid(user, viewers);
             }
@@ -154,6 +202,7 @@
                 LogCheer( user, message, bits, flags, extra );
             }
 
+            //=====================================================
 
 
             //

@@ -35,7 +35,7 @@ app.post("/savetofile", (req, res) => {
 
         console.log(req.body.streamSession)
 
-        const data = JSON.stringify(req.body.streamSession,null, 2)
+        const data = JSON.stringify(req.body.streamSession,null, 2);
         fs.writeFile('streamSession.json', data, (err) => {
             if (err) {
                 res.json({error:err}) 
