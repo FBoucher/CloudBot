@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const fs = require('fs');
 const dateFormat = require('dateformat');
+const text2png = require('text2png');
 const app = express()
 const port = 3000
 
@@ -11,21 +12,47 @@ app.use(express.json());
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/', 'index.html')))
 
 app.post("/Hello", (req, res) => {
-    console.log("..s.")
 
     if(req.body && req.body.user){
+        let user = req.body.user;
+        let filename = dateFormat(new Date(), "yyyy-mm-dd-HHMM");
+        filename += `_hello-${user}.png`;
+        
+        console.log(`new image: ${filename}`);
 
-        console.log(req.body)
-
-        let user = req.body.user
-        let result = "Hello " + user
-        res.send({"msg":result}) 
+        let msg = `Hello ${user}!`;
+        createImage(filename, msg);
+        res.send({"msg":filename}) 
     }
     else{
         res.json({error:"no user."}) 
     }
 
 })
+
+
+
+app.post("/Attention", (req, res) => {
+
+    if(req.body && req.body.user){
+        let user = req.body.user;
+        let userMsg = req.body.message;
+        let filename = dateFormat(new Date(), "yyyy-mm-dd-HHMM");
+        filename += `_Att-${user}.png`;
+
+        console.log(`new image: ${filename}`);
+
+        let msg = `${user} said\:\n${userMsg}`;
+        createImage(filename, msg);
+        res.send({"msg":filename}) 
+    }
+    else{
+        res.json({error:"no user."}) 
+    }
+
+})
+
+
 
 
 app.post("/savetofile", (req, res) => {
@@ -100,9 +127,35 @@ app.post("/genstreamnotes", (req, res) => {
     else{
         res.json({error:"no data"}) 
     }
-
+    CleanUpGeneratedImages();
 })
 
 //test
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
 
+
+createImage = function(imageName, message){
+
+    fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
+        color: 'white', 
+        strokeWidth: '1.5',
+        strokeColor: 'gray',
+        font: '65px McKloud Black',
+        localFontName: 'McKloud Black'
+    }));
+}
+
+
+CleanUpGeneratedImages = function(){
+    const directory = './public/medias/generated';
+
+    fs.readdir(directory, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files) {
+        fs.unlink(path.join(directory, file), err => {
+        if (err) throw err;
+        });
+    }
+    });
+}

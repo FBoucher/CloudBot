@@ -32,6 +32,17 @@
             .toast-title{
                 font-size: 200%;
             }
+
+            .textBubble{
+                position:absolute;
+                top: 25px;
+                left: 500px;
+                z-index: 3;
+            }
+
+            .nuage{
+                z-index: 2;
+            }
         </style>
     </head>
     <body>
@@ -96,6 +107,12 @@
                     console.log( "!note was typed in chat" );
                     SavingNote(message);
                 }
+                else if( command === "attention" ) 
+                {
+                    console.log( "!attention was typed in chat" );
+                    Attention(user, message);
+                }
+
 
 
                 //== SOUNDS Section =====================================
@@ -106,17 +123,17 @@
                 else if( flags.broadcaster && command === "talk" ) {
                     ChatBotSay();
                 }
-                else if( flags.broadcaster && command === "cloud" ) {
+                else if( command === "cloud" ) {
                     cloud("Thumbs-up");
                 }
                 else if( flags.broadcaster && command === "clean" ) {
                     console.log( "!clean was typed in chat" );
                     clean();
                 }
-                else if( flags.broadcaster && command === "test" ) 
+                else if( flags.broadcaster && command === "hello" ) 
                 {
                     console.log( "-->streamSession: ", _streamSession );
-                    //testing123(user);
+                    hello(user);
                 }
                 else if( flags.broadcaster && command === "save" ) 
                 {
@@ -187,10 +204,12 @@
             }
 
             ComfyJS.onSub = ( user, message, subTierInfo, extra ) => {
+                console.log( "...onSub" );
                 LogSub(user, message, subTierInfo, 1, 0);
             }
 
             ComfyJS.onResub = ( user, message, streamMonths, cumulativeMonths, subTierInfo, extra  ) => {
+                console.log( "...onResub" );
                 LogSub(user, message, subTierInfo, streamMonths, cumulativeMonths);
             }
 
