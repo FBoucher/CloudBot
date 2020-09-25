@@ -1,0 +1,153 @@
+{
+  "Project": "CloudBot",
+  "DateTimeStart": "2020-09-11T13:08:36.985Z",
+  "DateTimeEnd": "",
+  "Notes": [],
+  "UserSession": [
+    {
+      "dropCount": 1,
+      "landedCount": 0,
+      "user": "xxxsteve420noscopexxx",
+      "lastMessage": "",
+      "hightScore": 0
+    },
+    {
+      "dropCount": 20,
+      "landedCount": 1,
+      "user": "coppersbeard",
+      "lastMessage": "",
+      "hightScore": "0.96"
+    },
+    {
+      "dropCount": 4,
+      "landedCount": 1,
+      "user": "fboucheros",
+      "lastMessage": "",
+      "hightScore": "17.31"
+    },
+    {
+      "dropCount": 3,
+      "landedCount": 1,
+      "user": "codewithsean",
+      "lastMessage": "",
+      "hightScore": "32.03"
+    },
+    {
+      "dropCount": 18,
+      "landedCount": 1,
+      "user": "fredda_the_cat",
+      "lastMessage": "",
+      "hightScore": "34.75"
+    },
+    {
+      "dropCount": 11,
+      "landedCount": 2,
+      "user": "thisisdavid",
+      "lastMessage": "",
+      "hightScore": "37.13"
+    },
+    {
+      "dropCount": 10,
+      "landedCount": 1,
+      "user": "maximerouiller",
+      "lastMessage": "",
+      "hightScore": "41.43"
+    },
+    {
+      "dropCount": 21,
+      "landedCount": 3,
+      "user": "undefined_process",
+      "lastMessage": "",
+      "hightScore": "45.10"
+    },
+    {
+      "dropCount": 5,
+      "landedCount": 1,
+      "user": "jtsom",
+      "lastMessage": "",
+      "hightScore": "50.74"
+    },
+    {
+      "dropCount": 20,
+      "landedCount": 2,
+      "user": "codebymistakes",
+      "lastMessage": "",
+      "hightScore": "57.73"
+    },
+    {
+      "dropCount": 5,
+      "landedCount": 1,
+      "user": "hiitechk",
+      "lastMessage": "",
+      "hightScore": "59.07"
+    },
+    {
+      "dropCount": 20,
+      "landedCount": 3,
+      "user": "lurkydev",
+      "lastMessage": "",
+      "hightScore": "63.02"
+    },
+    {
+      "dropCount": 20,
+      "landedCount": 5,
+      "user": "groversaurus",
+      "lastMessage": "",
+      "hightScore": "71.25"
+    },
+    {
+      "dropCount": 20,
+      "landedCount": 4,
+      "user": "therealsurlybot",
+      "lastMessage": "",
+      "hightScore": "74.64"
+    },
+    {
+      "dropCount": 20,
+      "landedCount": 2,
+      "user": "theunoriginaljerk",
+      "lastMessage": "",
+      "hightScore": "78.96"
+    },
+    {
+      "dropCount": 13,
+      "landedCount": 2,
+      "user": "surlydev",
+      "lastMessage": "",
+      "hightScore": "79.43"
+    },
+    {
+      "dropCount": 2,
+      "landedCount": 0,
+      "user": "tbdgamer",
+      "lastMessage": "",
+      "hightScore": 0
+    }
+  ],
+  "NewFollowers": [],
+  "Raiders": [],
+  "Subscribers": [
+    "king_pl4gue!"
+  ],
+  "Hosts": [
+    "therealsurlybot"
+  ],
+  "Cheerers": [],
+  "TimeLogs": [
+    {
+      "user": "fboucheros",
+      "message": "Adding Command Note",
+      "time": "00:30:45"
+    },
+    {
+      "user": "fboucheros",
+      "message": "Filter Scores for today's players",
+      "time": "00:44:32"
+    },
+    {
+      "user": "fboucheros",
+      "message": "test the filter",
+      "time": "01:11:09"
+    }
+  ]
+}

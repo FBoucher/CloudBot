@@ -19,6 +19,10 @@ Sounds:
 - **!bonjour**: play sound "Bonjour Hi"
 - **!bad**: play sound "Bonjour Hi"
 - **!yeah**: play sound "Yeeeeeeaaaah!"
+- **!knock** : Play sound "Realistic knock on a door"
+
+CB:
+- **!cloud** : Show CD (aka Cloud Bot) GIF
 
 
 Only Broadcaster:
@@ -58,6 +62,10 @@ Finally replace fboucheros by the name of your Twitch Channel on the last line.
 ```
 
 ~ Have fun!
+
+Note: The Font use by CloudBot is `McKloud Black` and can be found at: https://www.1001fonts.com/mckloud-font.html
+
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -77,3 +85,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+

@@ -19,6 +19,7 @@
   "dependencies": {
     "dateformat": "^3.0.3",
     "express": "^4.17.1",
+    "text2png": "^2.3.0",
     "toastr": "^2.1.4"
   },
   "devDependencies": {

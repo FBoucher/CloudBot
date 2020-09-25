@@ -99,7 +99,8 @@ const SoundEnum = {
     yeah : "public/medias/yeah.mp3",
     bonjourHi : "public/medias/BonjourHi.mp3",
     badFeeling : "public/medias/badfeeling.mp3",
-    doorknock: "public/medias/knocking-on-door.mp3"
+    doorknock: "public/medias/knocking-on-door.mp3",
+    hmmhmm: "public/medias/hmmhmm.mp3"
 };
 
 
@@ -143,6 +144,15 @@ cloud = function(expression)
     setTimeout(() => {  clean(); }, 5000);
 }
 
+ChatBotShow = function(expression, imgText)
+{
+
+    const fileName = "CB-" + expression + ".gif";
+    document.querySelector("#imageViewer").innerHTML = "<img src='public/medias/" + fileName + "' class='nuage'>";
+    document.querySelector("#imageViewer").innerHTML += "<img src='public/medias/generated/r" + imgText + "' class='textBubble'>";
+    setTimeout(() => {  clean(); }, 5000);
+}
+
 sleep = function (ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -168,6 +178,7 @@ scores = function()
         //     console.log( `... Skipping ${sortedUsers[i].user}, didn't play today.`);
         // }
     }
+    cloud("Wow");
 }
 
 
@@ -313,7 +324,7 @@ IncrementDropCounter = function(user)
 
 
 
-testing123 = function(user)
+hello = function(user)
 {
     const data = {user: user};
     const options = {
@@ -326,7 +337,12 @@ testing123 = function(user)
     .then(response => response.json())
     .then(result => {
         console.log('Success:', result);
-        ChatBotSay(result.msg);
+        //ChatBotSay(result.msg);
+
+        setTimeout(() => {
+            ChatBotShow('Thumbs-up', result.msg)
+        }, 1000); 
+        
     })
     .catch(error => {
         console.error('Error:', error);
@@ -334,6 +350,33 @@ testing123 = function(user)
 
 }
 
+
+
+Attention = function(user, message)
+{
+    const data = {user: user, message: message};
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }
+
+    fetch('/Attention', options)
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+  
+        setTimeout(() => {
+            ChatBotShow('Thumbs-up', result.msg)
+            playSound(SoundEnum.hmmhmm);
+        }, 1000); 
+        
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+}
 
 SaveToFile = function()
 {
@@ -693,7 +736,7 @@ LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
 
     cloud("Yeah");
     playSound(SoundEnum.yeah);
-    _streamSession.NewSubscribers.push(new Subscriber(user, streamMonths));
+    _streamSession.Subscribers.push(new Subscriber(user, streamMonths));
 }
 
 
