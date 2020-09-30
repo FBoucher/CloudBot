@@ -149,7 +149,7 @@ ChatBotShow = function(expression, imgText)
 
     const fileName = "CB-" + expression + ".gif";
     document.querySelector("#imageViewer").innerHTML = "<img src='public/medias/" + fileName + "' class='nuage'>";
-    document.querySelector("#imageViewer").innerHTML += "<img src='public/medias/generated/r" + imgText + "' class='textBubble'>";
+    document.querySelector("#imageViewer").innerHTML += "<img src='public/medias/generated/" + imgText + "' class='textBubble'>";
     setTimeout(() => {  clean(); }, 5000);
 }
 
@@ -628,7 +628,7 @@ GenerateTimeLogSection = function()
 
         for(timeLog of _streamSession.TimeLogs)
         {
-            timeLogsSection += `- ${timeLog.time} ${timeLog.message}\n`;
+            timeLogsSection += `${timeLog.time} ${timeLog.message}\n`;
         }
 
         return timeLogsSection;
@@ -746,6 +746,6 @@ LogHost = function(user, viewers, autohost, extra ){
 
 
 LogCheer = function( user, message, bits, flags, extra ){
-    _streamSession.Cheerers.push( new Cheerers(user, bits));
+    _streamSession.Cheerers.push( new Cheerer(user, bits));
 }
 
