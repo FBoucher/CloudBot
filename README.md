@@ -24,6 +24,11 @@ Sounds:
 CB:
 - **!cloud** : Show CD (aka Cloud Bot) GIF
 
+Tools: 
+- **!time** <text>: Add a time log to the show notes (those are used to create timestamps on YouTube)
+- **!attention** <text>: Play a notification sound and draw the text in the screen.
+- **!note** <text>: Add a note/ code snippet / url useful during the stream
+
 
 Only Broadcaster:
 - **!scores**: display table of highest scores
@@ -31,6 +36,11 @@ Only Broadcaster:
 - **!load**: Load the file containing the previous session data.
 - **!save**: Save in a local file `streamSession.json` the current session data.
 - **!talk**: The bot will repete the message
+
+- **!todo-add** <text>:  Add a new To-Do
+- **!todo-start** <number>:  Set the identified To-Do as active
+- **!todo-cancel** <number>:  Set the identified To-Do as cancelled
+- **!todo-done** <number>:  Set the identified To-Do as done/ closed
 
 
 Upcomming Available Commands
