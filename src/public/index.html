@@ -43,6 +43,36 @@
             .nuage{
                 z-index: 2;
             }
+
+            #todoArea{
+                position: absolute;
+                right: 30px;
+                top: 30px;
+                width: 200px;
+                margin: 1px;
+                box-shadow: 5px 10px 5px #888888;
+                border: 3px solid rgb(187, 239, 255);
+                background-color: rgb(187, 239, 255);
+            }
+
+            #todoArea, h4{
+                margin: 5px;  
+            }
+
+            #todoList{
+                background-color: ghostwhite;
+                border-top: 2px solid  rgb(187, 239, 255);
+            }
+            .todo.done{
+                text-decoration: line-through;
+            }
+            .todo.cancel{
+                color: dimgray;
+                background-color: #cccccc;
+            }
+            .todo.inProgress{
+                background-color:dodgerblue;
+            }
         </style>
     </head>
     <body>
@@ -50,6 +80,9 @@
         <h1 id="cbTitle"></h1>
         <p id="lastChatMsg"></p>
         <div id="imageViewer"></div>
+        <div id="todoArea"><h4>To-Dos</h4>
+            <div id="todoList"></div>
+        </div>
         
         <script type="text/javascript">
             //import SoundEnum from './cloudbot.js';
@@ -80,6 +113,22 @@
                 else if( flags.broadcaster && command === "clean" ) {
                     console.log( "!clean was typed in chat" );
                     clean();
+                }
+                else if( flags.broadcaster && command === "todo-add" ) {
+                    console.log( "!addTodo was typed in chat" );
+                    addTodo(message);
+                }
+                else if( flags.broadcaster && command === "todo-start" ) {
+                    console.log( "!todo-start was typed in chat" );
+                    SetTodoStatus(message, TodoStatusEnum.inProgress);
+                }
+                else if( flags.broadcaster && command === "todo-done" ) {
+                    console.log( "!todo-done was typed in chat" );
+                    SetTodoStatus(message, TodoStatusEnum.done);
+                }
+                else if( flags.broadcaster && command === "todo-cancel" ) {
+                    console.log( "!todo-cancel was typed in chat" );
+                    SetTodoStatus(message, TodoStatusEnum.cancel);
                 }
                 else if(command === "scores" ) 
                 {

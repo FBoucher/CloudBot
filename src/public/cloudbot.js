@@ -46,6 +46,15 @@ class Cheerer{
     }
 }
 
+class Todo{
+
+    constructor(id, description, status) {
+        this.id = id;
+        this.description = description;
+        this.status = status;
+    }
+}
+
 class TimeLog{
     
     constructor(user, message, time) {
@@ -78,6 +87,7 @@ class StreamSession
         this.Hosts = [];
         this.Cheerers = [];
         this.TimeLogs = [];
+        this.Todos = [];
     }
 
     constructor() {
@@ -92,6 +102,7 @@ class StreamSession
         this.Hosts = [];
         this.Cheerers = [];
         this.TimeLogs = [];
+        this.Todos = [];
     }
 }
 
@@ -103,6 +114,12 @@ const SoundEnum = {
     hmmhmm: "public/medias/hmmhmm.mp3"
 };
 
+const TodoStatusEnum = {
+    new : "new",
+    inProgress : "inProgress",
+    done : "done",
+    cancel: "cancel"
+};
 
 getUserPosition = function(userName)
 {
@@ -378,6 +395,43 @@ Attention = function(user, message)
 
 }
 
+addTodo = function(description)
+{
+    const cntTodos = _streamSession.Todos.length;
+
+    _streamSession.Todos.push(new Todo(cntTodos + 1, description, TodoStatusEnum.new));
+    RefreshTodosArea();
+}
+
+
+RefreshTodosArea = function()
+{
+    let htmlTodos = "";
+    _streamSession.Todos.forEach(element => {
+        htmlTodos += `<div class="todo ${element.status}">${element.id} - ${element.description}</div>`
+    });  
+    document.querySelector("#todoList").innerHTML = htmlTodos;
+}
+
+SetTodoStatus = function(id, status)
+{
+    let found = false;
+    const max = _streamSession.Todos.length;
+
+    console.log(`... searching for!: ${id}`);
+
+    for(i = 0; i < max && !found; i++){
+        console.log(`Look at: ${_streamSession.Todos[i].id} - ${_streamSession.Todos[i].status}`);
+        if(_streamSession.Todos[i].id == id){
+            console.log(`match!: ${_streamSession.Todos[i].id} - ${_streamSession.Todos[i].status}`);
+            _streamSession.Todos[i].status = status;
+            found = true;
+        }
+    }
+    RefreshTodosArea();
+}
+
+
 SaveToFile = function()
 {
     const data = {streamSession: _streamSession};
@@ -597,6 +651,25 @@ GenerateHostSection = function()
         }
 
         return hostSection;
+    }
+    return "";
+}
+
+
+
+GenerateTodoSection = function()
+{
+    if(_streamSession.Todos.length > 0){
+        let todoSection = "\n## TodDos\n\n"
+
+        _streamSession.Todos.forEach(element => {
+            const checkbox = (element.status == TodoStatusEnum.done) ? "[X]": "[ ]";
+            const isCancelled = (element.status == TodoStatusEnum.cancel) ? "~": "";
+            const isInProgress = (element.status == TodoStatusEnum.inProgress) ? "**": "";
+            todoSection += `- ${isCancelled}${checkbox} ${isInProgress}${element.description}${isInProgress}${isCancelled}\n`;
+        });
+
+        return todoSection;
     }
     return "";
 }
