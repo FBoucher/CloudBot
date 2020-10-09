@@ -55,6 +55,17 @@ class Todo{
     }
 }
 
+class Reminder{
+
+    constructor(name, message) {
+        
+        this.Name = name;
+        this.Message = message;
+        this.Status = ReminderStatusEnum.active;
+        this.LastCheck = new Date();
+    }
+}
+
 class TimeLog{
     
     constructor(user, message, time) {
@@ -75,7 +86,13 @@ class StreamSession
         this.Project = value;
     }
 
+    Id = function(value)
+    {
+        this.Id = value;
+    }
+
     Init = function(){
+        this.Id = 0;
         this.Project = "";
         this.DateTimeStart = "";
         this.DateTimeEnd = "";
@@ -88,9 +105,11 @@ class StreamSession
         this.Cheerers = [];
         this.TimeLogs = [];
         this.Todos = [];
+        this.Reminders = [];
     }
 
     constructor() {
+        this.Id = 0;
         this.Project = "";
         this.DateTimeStart = "";
         this.DateTimeEnd = "";
@@ -103,6 +122,7 @@ class StreamSession
         this.Cheerers = [];
         this.TimeLogs = [];
         this.Todos = [];
+        this.Reminders = [];
     }
 }
 
@@ -119,6 +139,12 @@ const TodoStatusEnum = {
     inProgress : "inProgress",
     done : "done",
     cancel: "cancel"
+};
+
+const ReminderStatusEnum = {
+    active : "active",
+    inactive : "inactive",
+    done : "done"
 };
 
 getUserPosition = function(userName)
@@ -432,10 +458,10 @@ SetTodoStatus = function(id, status)
 }
 
 
-SaveToFile = function()
+SaveToFile = function(verbose = true)
 {
     const data = {streamSession: _streamSession};
-    console.log('..c. data: ', data);
+    //console.log('..c. data: ', data);
     const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -445,8 +471,10 @@ SaveToFile = function()
     fetch('/savetofile', options)
     .then(response => response.json())
     .then(result => {
-        console.log('Success:', result);
-        ChatBotSay(result.msg);
+        //console.log('Success:', result);
+        if(verbose){
+            ChatBotSay(result.msg);
+        }
     })
     .catch(error => {
         console.error('Error:', error);
@@ -506,21 +534,45 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         // loading NewFollowers
         _streamSession.NewFollowers = data.NewFollowers;
 
-        _streamSession.Raiders = data.Raiders.map((o) => { 
-            const newRaider = new Raider(); 
-            for (const [key, value] of Object.entries(o)) 
-            { 
-                newRaider[key] = value; 
-            } return newRaider; 
-        });
+        if(data.Raiders.length > 0){
+            _streamSession.Raiders = data.Raiders.map((o) => { 
+                const newRaider = new Raider(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newRaider[key] = value; 
+                } return newRaider; 
+            });
+        }
 
-        _streamSession.TimeLogs = data.TimeLogs.map((o) => { 
-            const newTimeLog = new TimeLog(); 
-            for (const [key, value] of Object.entries(o)) 
-            { 
-                newTimeLog[key] = value; 
-            } return newTimeLog; 
-        });
+        if(data.TimeLogs.length > 0){
+            _streamSession.TimeLogs = data.TimeLogs.map((o) => { 
+                const newTimeLog = new TimeLog(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newTimeLog[key] = value; 
+                } return newTimeLog; 
+            });
+        }
+
+        if(data.Todos.length > 0){
+            _streamSession.Todos = data.Todos.map((o) => { 
+                const newTodo = new Todo(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newTodo[key] = value; 
+                } return newTodo; 
+            });
+        }
+
+        if(data.Reminders.length > 0){
+            _streamSession.Reminders = data.Reminders.map((o) => { 
+                const newReminder = new Todo(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newReminder[key] = value; 
+                } return newReminder; 
+            });
+        }
 
         _streamSession.Subscribers = data.Subscribers;
         _streamSession.Hosts = data.Hosts;
@@ -528,8 +580,8 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         _streamSession.Project = data.Project;
         _streamSession.DateTimeStart = data.DateTimeStart;
         _streamSession.Notes = data.Notes;
+        _streamSession.Id = data.Id;
     }
-
 
     console.log('done loading:', _streamSession);
 }
@@ -541,6 +593,29 @@ playSound = function(fileName)
 }
 
 
+CheckReminders = function()
+{
+    _streamSession.Reminders.forEach(reminder => {
+        console.log(`... looking at: ${reminder.Name}`);
+        if( reminder.Status == ReminderStatusEnum.active){
+            console.log(`... ${reminder.Name} is active`);
+            reminder.LastCheck = new Date();
+            ChatBotSay(reminder.Message);
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+// == Generate files =========================================
+// ===
 
 StreamNoteStart = async function(projectName)
 {
@@ -570,7 +645,7 @@ Generate_streamSessions = function()
     let _streamSession = "";
 
     //Project detail
-    _streamSession += GenerateProjectInfo();
+    _streamSession += GenerateSessiontInfo();
 
     // Stream Details
     _streamSession += GenerateTimeLogSection();
@@ -585,12 +660,13 @@ Generate_streamSessions = function()
 
 
 
-GenerateProjectInfo = function()
+GenerateSessiontInfo = function()
 {
-    let projectSection = "\n## Project\n\n"
-    projectSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
+    let sessionSection = "\n## Project\n\n"
+    sessionSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
 
-    return projectSection;
+    sessionSection += GenerateTodoSection();
+    return sessionSection;
 }
 
 
@@ -749,7 +825,7 @@ GenerateExtraInfo = function(){
 
 SaveNotesToFile = function(_streamSessions)
 {
-    const data = {project: _streamSession.Project, notes: _streamSessions};
+    const data = {id: _streamSession.Id, project: _streamSession.Project, notes: _streamSessions};
     console.log('..g. data: ', data);
     const options = {
         method: 'POST',

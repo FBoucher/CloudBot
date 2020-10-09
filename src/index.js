@@ -63,7 +63,9 @@ app.post("/savetofile", (req, res) => {
         console.log(req.body.streamSession)
 
         const data = JSON.stringify(req.body.streamSession,null, 2);
-        fs.writeFile('streamSession.json', data, (err) => {
+        const filename = `streamSession_${req.body.streamSession.Id}.json`
+
+        fs.writeFile(filename, data, (err) => {
             if (err) {
                 res.json({error:err}) 
             }
@@ -105,8 +107,8 @@ app.post("/genstreamnotes", (req, res) => {
     console.log("..g.");
     console.log("..project name: " + req.body.project);
 
-    let filename = dateFormat(new Date(), "yyyy-mm-dd_HHmmss");
-    filename += `-${req.body.project}.md`;
+    let filename = dateFormat(new Date(), "yyyy-mm-dd");
+    filename += ` - ${req.body.id} - ${req.body.project}.md`;
 
     console.log("..filename: " +  filename);
 

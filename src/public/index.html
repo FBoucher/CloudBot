@@ -88,6 +88,10 @@
             //import SoundEnum from './cloudbot.js';
 
             let _streamSession = new StreamSession();
+            _streamSession.Id = Math.floor((Math.random() * 100) );
+            
+            //Add Default Reminders
+            _streamSession.Reminders.push(new Reminder("project", "Did you assign a project yet?"));
 
             ComfyJS.onCommand = async ( user, command, message, flags, extra ) => {
                 
@@ -271,7 +275,19 @@
             }
 
             //=====================================================
+            // Recuring tasks
 
+            (function AutoSave(){
+                console.log( `ChatBot #${_streamSession.Id} as save his data` );
+                SaveToFile(false);
+                setTimeout(AutoSave, 600000);
+            })();
+
+            (function TimeToCheckReminders(){
+                console.log( `ChatBot #${_streamSession.Id} check his reminders` );
+                CheckReminders();
+                setTimeout(TimeToCheckReminders, 300000);
+            })();
 
             //
             // Define a const authToken in secret.js get the token at
