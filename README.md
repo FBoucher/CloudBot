@@ -52,7 +52,7 @@ Upcomming Available Commands
 How to use it
 -------------
 
-The Cloudbot now required a server. A tiny one but it's not a static hmtl web page anymore. It's using Node.js. You can run it locally or host it somewhere (ex: Azure).
+The Cloudbot now required a server. A tiny one but it's not a static HTML web page anymore. It's using Node.js. You can run it locally or host it somewhere (ex: Azure).
 If you decide to run it locally execute: `npm start` from inside the folder `src`.
 
 Make a new browser source overlay into your streaming tools (ex: OBS, StreamLabs OBS) and connect it to the root url where the server is running. (ex: `http://localhost:3000`.
