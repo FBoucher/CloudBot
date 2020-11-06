@@ -16,7 +16,8 @@ class UserSession
         this.landedCount = 0;
         this.user = user;
         this.lastMessage = "";
-        this.hightScore = 0;
+        this.highScore = 0;
+        this.bestHighScore = 0;
     }
 }
 
@@ -76,7 +77,11 @@ class TimeLog{
 }
 
 compareHightScore = function(a, b) {
-    return a.hightScore - b.hightScore;
+    return a.highScore - b.highScore;
+}
+
+compareBestHightScore = function(a, b) {
+    return a.bestHighScore - b.bestHighScore;
 }
 
 class StreamSession
@@ -212,7 +217,7 @@ scores = function()
         //console.log(`... checking: ${sortedUsers[i].user} --- d2: ${sortedUsers[i].lastUpdate}`);
 
         if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
-            const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
+            const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].highScore}`;
             setTimeout(() => {
                 DisplayNotification( msg );
             }, cntScoreDisplayed++ * 1000); 
@@ -244,10 +249,15 @@ UserLanded = function(user, curScore)
     {
         _streamSession.UserSession[userPos].landedCount++;
 
-        if(_streamSession.UserSession[userPos].hightScore < curScore)
+        if(_streamSession.UserSession[userPos].highScore < curScore)
         {
             console.log( "... New highscore " + curScore);
-            _streamSession.UserSession[userPos].hightScore = curScore;
+            _streamSession.UserSession[userPos].highScore = curScore;
+
+            if(_streamSession.UserSession[userPos].bestHighScore < curScore)
+            {
+                _streamSession.UserSession[userPos].bestHighScore = curScore;
+            }
             HightScoreParty(user, curScore);
         }
         else{
@@ -329,7 +339,7 @@ StatsFor = function(user){
 
     if(userPos >= 0)
     {
-        msg = `Tentative(s): ${_streamSession.UserSession[userPos].dropCount} <br />Landed: ${_streamSession.UserSession[userPos].landedCount} <br />Highest score: ${_streamSession.UserSession[userPos].hightScore}`
+        msg = `Tentative(s): ${_streamSession.UserSession[userPos].dropCount} <br />Landed: ${_streamSession.UserSession[userPos].landedCount} <br />Highest score: ${_streamSession.UserSession[userPos].highScore}`
     }
 
     //console.log( "... " + msg.replace(/<br \/>/g, "   "));
@@ -582,6 +592,9 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         _streamSession.Notes = data.Notes;
         _streamSession.Id = data.Id;
     }
+    else{
+        ResetHightScore();
+    }
 
     console.log('done loading:', _streamSession);
 }
@@ -606,7 +619,13 @@ CheckReminders = function()
 }
 
 
-
+ResetHightScore = function()
+{
+    console.log('... Resetting highScores');
+    for (i=0; i < _streamSession.UserSession.length; i++) {
+        _streamSession.UserSession[i].highScore = 0;
+    }
+}
 
 
 
@@ -629,6 +648,9 @@ StreamNoteStart = async function(projectName)
     });
 
 }
+
+
+
 
 
 StreamNoteStop = function()
@@ -797,7 +819,7 @@ GenerateParachuteSection = function(){
 
         for ( i=0; i < sortedUsers.length; i++) {
             if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
-                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
+                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
             }
         }
         return parachuteSection;
