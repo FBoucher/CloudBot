@@ -165,7 +165,30 @@
                     console.log( "!attention was typed in chat" );
                     Attention(user, message);
                 }
-
+                //-- Reminders ---------
+                else if( flags.broadcaster &&  command === "reminder-add" ) 
+                {
+                    console.log( "!reminder-add was typed in chat" );
+                    if(str.includes("|"))
+                    {
+                        var reminderDetail = str.split("|");
+                        addReminder(reminderDetail[0], reminderDetail[1]);
+                    }
+                    else{
+                        ChatBotSay(`Hey ${user}, please use "|" to separate the name and the description of the Reminder.`);
+                    }
+                    
+                }
+                else if( flags.broadcaster &&  command === "reminder-stop" ) 
+                {
+                    console.log( "!reminder-stop was typed in chat" );
+                    SetReminderStatus(message, ReminderStatusEnum.done);
+                }
+                else if( flags.broadcaster &&  command === "reminder-pause" ) 
+                {
+                    console.log( "!reminder-pause was typed in chat" );
+                    SetReminderStatus(message, ReminderStatusEnum.inactive);
+                }
 
 
                 //== SOUNDS Section =====================================

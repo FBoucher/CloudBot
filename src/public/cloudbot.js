@@ -468,6 +468,34 @@ SetTodoStatus = function(id, status)
 }
 
 
+
+
+addReminder = function(name, message)
+{ 
+    _streamSession.Reminders.push(new Reminder(name, message));
+}
+
+
+
+SetReminderStatus = function(name, status)
+{
+    let found = false;
+    const max = _streamSession.Reminders.length;
+
+    console.log(`... searching for!: ${name}`);
+
+    for(i = 0; i < max && !found; i++){
+        console.log(`Look at: ${_streamSession.Reminders[i].Name} - ${_streamSession.Reminders[i].Status}`);
+        if(_streamSession.Reminders[i].id == id){
+            console.log(`match!: ${_streamSession.Reminders[i].Name} - ${_streamSession.Reminders[i].Status}`);
+            _streamSession.Reminders[i].Status = status;
+            found = true;
+        }
+    }
+}
+
+
+
 SaveToFile = function(verbose = true)
 {
     const data = {streamSession: _streamSession};
@@ -644,6 +672,7 @@ StreamNoteStart = async function(projectName)
         //console.log('.. streamSession before : ', _streamSession);
         _streamSession.Project = projectName;
         _streamSession.DateTimeStart = new Date();
+        _streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
         //console.log('.. streamSession just after : ', _streamSession);
     });
 
