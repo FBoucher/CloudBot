@@ -125,3 +125,7 @@ src/streamSession_backup.json
 src/streamSession.json
 
 src/*.md
+
+src/public/medias/generated/
+
+src/streamSession_0.json
