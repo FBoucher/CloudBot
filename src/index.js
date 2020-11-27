@@ -139,13 +139,18 @@ app.listen(port, () => console.log(`Example app listening at http://localhost:${
 
 createImage = function(imageName, message){
 
-    fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
-        color: 'white', 
-        strokeWidth: '1.5',
-        strokeColor: 'gray',
-        font: '65px McKloud Black',
-        localFontName: 'McKloud Black'
-    }));
+    fs.mkdir('./public/medias/generated', { recursive: true }, (err) => {
+        if (err) throw err;
+
+        fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
+            color: 'white', 
+            strokeWidth: '1.5',
+            strokeColor: 'gray',
+            font: '65px sans-serif'
+            // font: '65px McKloud Black',
+            // localFontName: 'McKloud Black'
+        }));
+    });
 }
 
 
