@@ -3,7 +3,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Simple Twitch Bot for Frank's Twitch Stream, build with [Comfy.JS](https://github.com/instafluff/ComfyJS). 
+Simple Twitch chatbot for Twitch Stream, build with [Comfy.JS](https://github.com/instafluff/ComfyJS). 
 
 ![cloudbot logo](medias/cloudbot_logo.png)
 
@@ -52,6 +52,8 @@ Upcomming Available Commands
 How to use it
 -------------
 
+### Directly from the code
+
 The Cloudbot now required a server. A tiny one but it's not a static HTML web page anymore. It's using Node.js. You can run it locally or host it somewhere (ex: Azure).
 If you decide to run it locally execute: `npm start` from inside the folder `src`.
 
@@ -70,6 +72,12 @@ Finally replace fboucheros by the name of your Twitch Channel on the last line.
 ```js
  ComfyJS.Init( "fboucheros", authToken );
 ```
+
+### Using Docker Container
+
+This project is now available in container.
+(more soon)
+
 
 ~ Have fun!
 
