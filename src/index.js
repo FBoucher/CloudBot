@@ -7,6 +7,7 @@ const app = express()
 const port = 3000
 
 app.use('/public', express.static("public"));
+app.use('/io', express.static("io"));
 app.use(express.json());
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/', 'index.html')))
@@ -63,7 +64,7 @@ app.post("/savetofile", (req, res) => {
         console.log(req.body.streamSession)
 
         const data = JSON.stringify(req.body.streamSession,null, 2);
-        const filename = `streamSession_${req.body.streamSession.Id}.json`
+        const filename = `io/streamSession_${req.body.streamSession.Id}.json`
 
         fs.writeFile(filename, data, (err) => {
             if (err) {
@@ -107,7 +108,7 @@ app.post("/genstreamnotes", (req, res) => {
     console.log("..g.");
     console.log("..project name: " + req.body.project);
 
-    let filename = dateFormat(new Date(), "yyyy-mm-dd");
+    let filename = "io/" + dateFormat(new Date(), "yyyy-mm-dd");
     filename += ` - ${req.body.id} - ${req.body.project}.md`;
 
     console.log("..filename: " +  filename);
@@ -138,13 +139,18 @@ app.listen(port, () => console.log(`Example app listening at http://localhost:${
 
 createImage = function(imageName, message){
 
-    fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
-        color: 'white', 
-        strokeWidth: '1.5',
-        strokeColor: 'gray',
-        font: '65px McKloud Black',
-        localFontName: 'McKloud Black'
-    }));
+    fs.mkdir('./public/medias/generated', { recursive: true }, (err) => {
+        if (err) throw err;
+
+        fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
+            color: 'white', 
+            strokeWidth: '1.5',
+            strokeColor: 'gray',
+            font: '65px sans-serif'
+            // font: '65px McKloud Black',
+            // localFontName: 'McKloud Black'
+        }));
+    });
 }
 
 
