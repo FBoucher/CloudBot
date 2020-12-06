@@ -3,7 +3,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Simple Twitch Bot for Frank's Twitch Stream, build with [Comfy.JS](https://github.com/instafluff/ComfyJS). 
+Simple Twitch chatbot for Twitch Stream, build with [Comfy.JS](https://github.com/instafluff/ComfyJS). 
 
 ![cloudbot logo](medias/cloudbot_logo.png)
 
@@ -24,6 +24,11 @@ Sounds:
 CB:
 - **!cloud** : Show CD (aka Cloud Bot) GIF
 
+Tools: 
+- **!time** <text>: Add a time log to the show notes (those are used to create timestamps on YouTube)
+- **!attention** <text>: Play a notification sound and draw the text in the screen.
+- **!note** <text>: Add a note/ code snippet / url useful during the stream
+
 
 Only Broadcaster:
 - **!scores**: display table of highest scores
@@ -31,6 +36,11 @@ Only Broadcaster:
 - **!load**: Load the file containing the previous session data.
 - **!save**: Save in a local file `streamSession.json` the current session data.
 - **!talk**: The bot will repete the message
+
+- **!todo-add** <text>:  Add a new To-Do
+- **!todo-start** <number>:  Set the identified To-Do as active
+- **!todo-cancel** <number>:  Set the identified To-Do as cancelled
+- **!todo-done** <number>:  Set the identified To-Do as done/ closed
 
 
 Upcomming Available Commands
@@ -42,7 +52,9 @@ Upcomming Available Commands
 How to use it
 -------------
 
-The Cloudbot now required a server. A tiny one but it's not a static hmtl web page anymore. It's using Node.js. You can run it locally or host it somewhere (ex: Azure).
+### Directly from the code
+
+The Cloudbot now required a server. A tiny one but it's not a static HTML web page anymore. It's using Node.js. You can run it locally or host it somewhere (ex: Azure).
 If you decide to run it locally execute: `npm start` from inside the folder `src`.
 
 Make a new browser source overlay into your streaming tools (ex: OBS, StreamLabs OBS) and connect it to the root url where the server is running. (ex: `http://localhost:3000`.
@@ -60,6 +72,12 @@ Finally replace fboucheros by the name of your Twitch Channel on the last line.
 ```js
  ComfyJS.Init( "fboucheros", authToken );
 ```
+
+### Using Docker Container
+
+This project is now available in container.
+(more soon)
+
 
 ~ Have fun!
 

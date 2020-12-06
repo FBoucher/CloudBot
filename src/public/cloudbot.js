@@ -16,7 +16,8 @@ class UserSession
         this.landedCount = 0;
         this.user = user;
         this.lastMessage = "";
-        this.hightScore = 0;
+        this.highScore = 0;
+        this.bestHighScore = 0;
     }
 }
 
@@ -46,6 +47,26 @@ class Cheerer{
     }
 }
 
+class Todo{
+
+    constructor(id, description, status) {
+        this.id = id;
+        this.description = description;
+        this.status = status;
+    }
+}
+
+class Reminder{
+
+    constructor(name, message) {
+        
+        this.Name = name;
+        this.Message = message;
+        this.Status = ReminderStatusEnum.active;
+        this.LastCheck = new Date();
+    }
+}
+
 class TimeLog{
     
     constructor(user, message, time) {
@@ -56,7 +77,11 @@ class TimeLog{
 }
 
 compareHightScore = function(a, b) {
-    return a.hightScore - b.hightScore;
+    return a.highScore - b.highScore;
+}
+
+compareBestHightScore = function(a, b) {
+    return a.bestHighScore - b.bestHighScore;
 }
 
 class StreamSession
@@ -66,7 +91,13 @@ class StreamSession
         this.Project = value;
     }
 
+    Id = function(value)
+    {
+        this.Id = value;
+    }
+
     Init = function(){
+        this.Id = 0;
         this.Project = "";
         this.DateTimeStart = "";
         this.DateTimeEnd = "";
@@ -78,9 +109,12 @@ class StreamSession
         this.Hosts = [];
         this.Cheerers = [];
         this.TimeLogs = [];
+        this.Todos = [];
+        this.Reminders = [];
     }
 
     constructor() {
+        this.Id = 0;
         this.Project = "";
         this.DateTimeStart = "";
         this.DateTimeEnd = "";
@@ -92,6 +126,8 @@ class StreamSession
         this.Hosts = [];
         this.Cheerers = [];
         this.TimeLogs = [];
+        this.Todos = [];
+        this.Reminders = [];
     }
 }
 
@@ -103,6 +139,18 @@ const SoundEnum = {
     hmmhmm: "public/medias/hmmhmm.mp3"
 };
 
+const TodoStatusEnum = {
+    new : "new",
+    inProgress : "inProgress",
+    done : "done",
+    cancel: "cancel"
+};
+
+const ReminderStatusEnum = {
+    active : "active",
+    inactive : "inactive",
+    done : "done"
+};
 
 getUserPosition = function(userName)
 {
@@ -149,7 +197,7 @@ ChatBotShow = function(expression, imgText)
 
     const fileName = "CB-" + expression + ".gif";
     document.querySelector("#imageViewer").innerHTML = "<img src='public/medias/" + fileName + "' class='nuage'>";
-    document.querySelector("#imageViewer").innerHTML += "<img src='public/medias/generated/r" + imgText + "' class='textBubble'>";
+    document.querySelector("#imageViewer").innerHTML += "<img src='public/medias/generated/" + imgText + "' class='textBubble'>";
     setTimeout(() => {  clean(); }, 5000);
 }
 
@@ -169,7 +217,7 @@ scores = function()
         //console.log(`... checking: ${sortedUsers[i].user} --- d2: ${sortedUsers[i].lastUpdate}`);
 
         if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
-            const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].hightScore}`;
+            const msg = `${sortedUsers[i].user} --> ${sortedUsers[i].highScore}`;
             setTimeout(() => {
                 DisplayNotification( msg );
             }, cntScoreDisplayed++ * 1000); 
@@ -201,10 +249,15 @@ UserLanded = function(user, curScore)
     {
         _streamSession.UserSession[userPos].landedCount++;
 
-        if(_streamSession.UserSession[userPos].hightScore < curScore)
+        if(_streamSession.UserSession[userPos].highScore < curScore)
         {
             console.log( "... New highscore " + curScore);
-            _streamSession.UserSession[userPos].hightScore = curScore;
+            _streamSession.UserSession[userPos].highScore = curScore;
+
+            if(_streamSession.UserSession[userPos].bestHighScore < curScore)
+            {
+                _streamSession.UserSession[userPos].bestHighScore = curScore;
+            }
             HightScoreParty(user, curScore);
         }
         else{
@@ -286,7 +339,7 @@ StatsFor = function(user){
 
     if(userPos >= 0)
     {
-        msg = `Tentative(s): ${_streamSession.UserSession[userPos].dropCount} <br />Landed: ${_streamSession.UserSession[userPos].landedCount} <br />Highest score: ${_streamSession.UserSession[userPos].hightScore}`
+        msg = `Tentative(s): ${_streamSession.UserSession[userPos].dropCount} <br />Landed: ${_streamSession.UserSession[userPos].landedCount} <br />Highest score: ${_streamSession.UserSession[userPos].highScore}`
     }
 
     //console.log( "... " + msg.replace(/<br \/>/g, "   "));
@@ -378,10 +431,75 @@ Attention = function(user, message)
 
 }
 
-SaveToFile = function()
+addTodo = function(description)
+{
+    const cntTodos = _streamSession.Todos.length;
+
+    _streamSession.Todos.push(new Todo(cntTodos + 1, description, TodoStatusEnum.new));
+    RefreshTodosArea();
+}
+
+
+RefreshTodosArea = function()
+{
+    let htmlTodos = "";
+    _streamSession.Todos.forEach(element => {
+        htmlTodos += `<div class="todo ${element.status}">${element.id} - ${element.description}</div>`
+    });  
+    document.querySelector("#todoList").innerHTML = htmlTodos;
+}
+
+SetTodoStatus = function(id, status)
+{
+    let found = false;
+    const max = _streamSession.Todos.length;
+
+    console.log(`... searching for!: ${id}`);
+
+    for(i = 0; i < max && !found; i++){
+        console.log(`Look at: ${_streamSession.Todos[i].id} - ${_streamSession.Todos[i].status}`);
+        if(_streamSession.Todos[i].id == id){
+            console.log(`match!: ${_streamSession.Todos[i].id} - ${_streamSession.Todos[i].status}`);
+            _streamSession.Todos[i].status = status;
+            found = true;
+        }
+    }
+    RefreshTodosArea();
+}
+
+
+
+
+addReminder = function(name, message)
+{ 
+    _streamSession.Reminders.push(new Reminder(name, message));
+}
+
+
+
+SetReminderStatus = function(name, status)
+{
+    let found = false;
+    const max = _streamSession.Reminders.length;
+
+    console.log(`... searching for!: ${name}`);
+
+    for(i = 0; i < max && !found; i++){
+        console.log(`Look at: ${_streamSession.Reminders[i].Name} - ${_streamSession.Reminders[i].Status}`);
+        if(_streamSession.Reminders[i].id == id){
+            console.log(`match!: ${_streamSession.Reminders[i].Name} - ${_streamSession.Reminders[i].Status}`);
+            _streamSession.Reminders[i].Status = status;
+            found = true;
+        }
+    }
+}
+
+
+
+SaveToFile = function(verbose = true)
 {
     const data = {streamSession: _streamSession};
-    console.log('..c. data: ', data);
+    //console.log('..c. data: ', data);
     const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -391,8 +509,10 @@ SaveToFile = function()
     fetch('/savetofile', options)
     .then(response => response.json())
     .then(result => {
-        console.log('Success:', result);
-        ChatBotSay(result.msg);
+        //console.log('Success:', result);
+        if(verbose){
+            ChatBotSay(result.msg);
+        }
     })
     .catch(error => {
         console.error('Error:', error);
@@ -452,21 +572,45 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         // loading NewFollowers
         _streamSession.NewFollowers = data.NewFollowers;
 
-        _streamSession.Raiders = data.Raiders.map((o) => { 
-            const newRaider = new Raider(); 
-            for (const [key, value] of Object.entries(o)) 
-            { 
-                newRaider[key] = value; 
-            } return newRaider; 
-        });
+        if(data.Raiders.length > 0){
+            _streamSession.Raiders = data.Raiders.map((o) => { 
+                const newRaider = new Raider(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newRaider[key] = value; 
+                } return newRaider; 
+            });
+        }
 
-        _streamSession.TimeLogs = data.TimeLogs.map((o) => { 
-            const newTimeLog = new TimeLog(); 
-            for (const [key, value] of Object.entries(o)) 
-            { 
-                newTimeLog[key] = value; 
-            } return newTimeLog; 
-        });
+        if(data.TimeLogs.length > 0){
+            _streamSession.TimeLogs = data.TimeLogs.map((o) => { 
+                const newTimeLog = new TimeLog(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newTimeLog[key] = value; 
+                } return newTimeLog; 
+            });
+        }
+
+        if(data.Todos.length > 0){
+            _streamSession.Todos = data.Todos.map((o) => { 
+                const newTodo = new Todo(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newTodo[key] = value; 
+                } return newTodo; 
+            });
+        }
+
+        if(data.Reminders.length > 0){
+            _streamSession.Reminders = data.Reminders.map((o) => { 
+                const newReminder = new Todo(); 
+                for (const [key, value] of Object.entries(o)) 
+                { 
+                    newReminder[key] = value; 
+                } return newReminder; 
+            });
+        }
 
         _streamSession.Subscribers = data.Subscribers;
         _streamSession.Hosts = data.Hosts;
@@ -474,8 +618,11 @@ LoadStreamSession = function(data, projectName, isReload, callback)
         _streamSession.Project = data.Project;
         _streamSession.DateTimeStart = data.DateTimeStart;
         _streamSession.Notes = data.Notes;
+        _streamSession.Id = data.Id;
     }
-
+    else{
+        ResetHightScore();
+    }
 
     console.log('done loading:', _streamSession);
 }
@@ -487,6 +634,35 @@ playSound = function(fileName)
 }
 
 
+CheckReminders = function()
+{
+    _streamSession.Reminders.forEach(reminder => {
+        console.log(`... looking at: ${reminder.Name}`);
+        if( reminder.Status == ReminderStatusEnum.active){
+            console.log(`... ${reminder.Name} is active`);
+            reminder.LastCheck = new Date();
+            ChatBotSay(reminder.Message);
+        }
+    });
+}
+
+
+ResetHightScore = function()
+{
+    console.log('... Resetting highScores');
+    for (i=0; i < _streamSession.UserSession.length; i++) {
+        _streamSession.UserSession[i].highScore = 0;
+    }
+}
+
+
+
+
+
+
+
+// == Generate files =========================================
+// ===
 
 StreamNoteStart = async function(projectName)
 {
@@ -496,10 +672,14 @@ StreamNoteStart = async function(projectName)
         //console.log('.. streamSession before : ', _streamSession);
         _streamSession.Project = projectName;
         _streamSession.DateTimeStart = new Date();
+        _streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
         //console.log('.. streamSession just after : ', _streamSession);
     });
 
 }
+
+
+
 
 
 StreamNoteStop = function()
@@ -516,7 +696,7 @@ Generate_streamSessions = function()
     let _streamSession = "";
 
     //Project detail
-    _streamSession += GenerateProjectInfo();
+    _streamSession += GenerateSessiontInfo();
 
     // Stream Details
     _streamSession += GenerateTimeLogSection();
@@ -531,12 +711,13 @@ Generate_streamSessions = function()
 
 
 
-GenerateProjectInfo = function()
+GenerateSessiontInfo = function()
 {
-    let projectSection = "\n## Project\n\n"
-    projectSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
+    let sessionSection = "\n## Project\n\n"
+    sessionSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
 
-    return projectSection;
+    sessionSection += GenerateTodoSection();
+    return sessionSection;
 }
 
 
@@ -603,6 +784,25 @@ GenerateHostSection = function()
 
 
 
+GenerateTodoSection = function()
+{
+    if(_streamSession.Todos.length > 0){
+        let todoSection = "\n## TodDos\n\n"
+
+        _streamSession.Todos.forEach(element => {
+            const checkbox = (element.status == TodoStatusEnum.done) ? "[X]": "[ ]";
+            const isCancelled = (element.status == TodoStatusEnum.cancel) ? "~": "";
+            const isInProgress = (element.status == TodoStatusEnum.inProgress) ? "**": "";
+            todoSection += `- ${isCancelled}${checkbox} ${isInProgress}${element.description}${isInProgress}${isCancelled}\n`;
+        });
+
+        return todoSection;
+    }
+    return "";
+}
+
+
+
 
 GenerateCheersSection = function()
 {
@@ -628,7 +828,7 @@ GenerateTimeLogSection = function()
 
         for(timeLog of _streamSession.TimeLogs)
         {
-            timeLogsSection += `- ${timeLog.time} ${timeLog.message}\n`;
+            timeLogsSection += `${timeLog.time} ${timeLog.message}\n`;
         }
 
         return timeLogsSection;
@@ -648,7 +848,7 @@ GenerateParachuteSection = function(){
 
         for ( i=0; i < sortedUsers.length; i++) {
             if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
-                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].hightScore}\n`;
+                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
             }
         }
         return parachuteSection;
@@ -676,7 +876,7 @@ GenerateExtraInfo = function(){
 
 SaveNotesToFile = function(_streamSessions)
 {
-    const data = {project: _streamSession.Project, notes: _streamSessions};
+    const data = {id: _streamSession.Id, project: _streamSession.Project, notes: _streamSessions};
     console.log('..g. data: ', data);
     const options = {
         method: 'POST',
@@ -746,6 +946,6 @@ LogHost = function(user, viewers, autohost, extra ){
 
 
 LogCheer = function( user, message, bits, flags, extra ){
-    _streamSession.Cheerers.push( new Cheerers(user, bits));
+    _streamSession.Cheerers.push( new Cheerer(user, bits));
 }
 
