@@ -42,6 +42,10 @@ Only Broadcaster:
 - **!todo-cancel** <number>:  Set the identified To-Do as cancelled
 - **!todo-done** <number>:  Set the identified To-Do as done/ closed
 
+- **!reminder-add** <reminder Key Name> | reminder description:  Create a new reminder.
+- **!reminder-stop** <reminder Key Name>:  Set the reminder with the name equal to <reminder Key Name> to DONE.
+- **!reminder-pause** <reminder Key Name>:  Pause the reminder with the name equal to <reminder Key Name>. Set its status to inactive.
+
 
 Upcomming Available Commands
 ----------------------------
@@ -75,13 +79,22 @@ Finally replace fboucheros by the name of your Twitch Channel on the last line.
 
 ### Using Docker Container
 
-This project is now available in container.
-(more soon)
+This project is now available in a container. You can find it on: [https://hub.docker.com/repository/docker/fboucher/cloudbot](https://hub.docker.com/repository/docker/fboucher/cloudbot)
+
+- The container by default uses the port 3000, you can map it to a different one if you want to keep 3000 available for some other node development (in the command below, the chat bot will be available at http://localhost:3001). 
+
+- To export the stream notes mount a volume. The `${PWD}` is the current local folder on the host. The file `secret.js` also goes in this folder.
+
+Here an example how to instantiate the chatbot.
+
+```bash
+docker run -p 3001:3000 -d -v ${PWD}:/usr/src/app/io fboucher/cloudbot
+```
 
 
-~ Have fun!
+~ **Have fun!**
 
-Note: The Font use by CloudBot is `McKloud Black` and can be found at: https://www.1001fonts.com/mckloud-font.html
+---
 
 
 ## Contributors ✨
