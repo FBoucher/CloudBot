@@ -1,10 +1,11 @@
 name: Docker Image CI
+
 on:
-  push:
-    branches: [ main ]
+  push:
+    branches: [ main ]
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
     steps:
     - id: vars
         uses: pozetroninc/github-action-get-latest-release@master
