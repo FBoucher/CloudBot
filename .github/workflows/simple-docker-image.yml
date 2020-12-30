@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: vars
-      uses: pozetroninc/github-action-get-latest-release@master
+      uses: pozetroninc/github-action-get-latest-release@main
       with:
           owner: fboucher
           repo: cloudbot
