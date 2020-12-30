@@ -15,7 +15,7 @@ jobs:
       id: vars
       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v2
+      uses: elgohr/Publish-Docker-Github-Action@v1
       with:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
