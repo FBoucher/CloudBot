@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Release Docker Image CI
 
 on:
   release:
@@ -15,7 +15,7 @@ jobs:
       id: vars
       run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v1
+      uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
