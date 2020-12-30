@@ -6,11 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: vars
-      uses: pozetroninc/github-action-get-latest-release@main
+      uses: pozetroninc/github-action-get-latest-release@master
       with:
-          owner: fboucher
-          repo: cloudbot
-          excludes: prerelease
+          owner: FBoucher
+          repo: CloudBot
     - uses: actions/checkout@v2
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
