@@ -2,13 +2,14 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main 
 jobs:
   build:
     name: Lastest CloudBot
     runs-on: ubuntu-latest
     steps:
-    - id: cloudbot
+    - id: vars
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           owner: fboucher
@@ -21,4 +22,4 @@ jobs:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ steps.cloudbot.outputs.release }}-beta"
+        tags: "latest,${{ steps.vars.outputs.release }}-beta"

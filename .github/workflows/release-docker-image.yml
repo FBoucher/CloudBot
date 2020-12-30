@@ -11,13 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Set outputs
+      id: vars
+      run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
     - name: Publish to Registry
-      pre: echo ::save-state name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
       uses: elgohr/Publish-Docker-Github-Action@v2
       with:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
+        tags: "latest,${{ steps.vars.STATE_RELEASE_VERSION }}"
 
 
