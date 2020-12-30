@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  release:
+    types: [ published ]
+  push:
+    branches:
+      - main
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@main
+    - name: Publish to Registry
+      pre: echo ::save-state name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+      uses: elgohr/Publish-Docker-Github-Action@main
+      with:
+        name: ${{secrets.DOCKER_USER}}/cloudbot
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
+
+

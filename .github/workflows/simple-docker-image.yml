@@ -1,34 +1,26 @@
 name: Docker Image CI
 
 on:
-  release:
-    types: [ published ]
-
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 jobs:
-
   build:
-
+    name: Lastest CloudBot
     runs-on: ubuntu-latest
-
     steps:
+    - id: cloudbot
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: fboucher
+          repo: cloudbot
+          excludes: prerelease
     - uses: actions/checkout@v2
-    - name: Get the version
-      id: vars
-      run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag fboucher/cloudbot:${{steps.vars.outputs.tag}}
-
-    - name: Docker Login
-      uses: docker/login-action@v1.6.0
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@main
       with:
-        username: ${{secrets.DOCKER_USER}}
-        password: ${{secrets.DOCKER_PASSWORD}}
-        logout: true
-
-    - name: Push the tagged Docker image
-      run: docker push ${{secrets.DOCKER_USER}}/cloudbot:${{steps.vars.outputs.tag}}
-    - name: Build the latest Docker image
-      run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/angular-cli:latest
-    - name: Push the latest Docker image
-      run: docker push ${{secrets.DOCKER_USER}}/angular-cli:latest
-
+        name: ${{secrets.DOCKER_USER}}/cloudbot
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest,${{ steps.cloudbot.outputs.release }}-beta"
