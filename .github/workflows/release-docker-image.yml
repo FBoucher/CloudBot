@@ -20,6 +20,6 @@ jobs:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ steps.vars.STATE_RELEASE_VERSION }}"
+        tags: "latest,${{ steps.vars.RELEASE_VERSION }}"
 
 
