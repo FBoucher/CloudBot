@@ -1,21 +1,19 @@
-name: BETA Docker Image CI
-
-on:
-  push:
-    branches: [ main ]
+name: Build Docker Images
+on: [push]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: cloudbot-beta
+    runs-on: ubuntu-latest
     steps:
     - id: vars
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
+      uses: pozetroninc/github-action-get-latest-release@master
+      with:
           owner: fboucher
           repo: cloudbot
           excludes: prerelease
     - uses: actions/checkout@v2
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@main
+      uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
