@@ -5,12 +5,11 @@ jobs:
     name: cloudbot-beta
     runs-on: ubuntu-latest
     steps:
-    - id: vars
-      uses: pozetroninc/github-action-get-latest-release@master
+    - id: last_release
+      uses: InsonusK/get-latest-release@v1.0.1
       with:
-          owner: FBoucher
-          repo: CloudBot
-          excludes: release, draft
+          exclude_types: "release"
+          view_top: 1  
     - uses: actions/checkout@v2
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
@@ -18,7 +17,12 @@ jobs:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ steps.vars.outputs.release }}-beta"
+        tags: "latest,${{ steps.last_release.outputs.tag_name }}-beta"
     - name: Print result
       run: |
-        echo "myVersion: ${{ steps.vars.outputs.release }}"
+        echo "id: ${{ steps.last_release.outputs.id }}"
+        echo "name: ${{ steps.last_release.outputs.name }}"
+        echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
+        echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
+        echo "draft: ${{ steps.last_release.outputs.draft }}"
+        echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
