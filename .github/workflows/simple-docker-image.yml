@@ -18,6 +18,6 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest,${{ steps.vars.outputs.release }}-beta"
-    - name: "Print result"
-        run: |
-          echo "myVersion: ${{ steps.vars.outputs.release }}"
+    - name: Print result
+      run: |
+        echo "myVersion: ${{ steps.vars.outputs.release }}"
