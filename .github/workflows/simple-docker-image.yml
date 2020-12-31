@@ -8,7 +8,8 @@ jobs:
     - id: last_release
       uses: InsonusK/get-latest-release@v1.0.1
       with:
-          exclude_types: "release"
+          myToken: ${{ github.token }}
+          exclude_types: "release, prerelease"
           view_top: 1  
     - uses: actions/checkout@v2
     - name: Publish to Registry
@@ -17,7 +18,7 @@ jobs:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ steps.last_release.outputs.tag_name }}-beta"
+        tags: "${{ steps.last_release.outputs.tag_name }}-beta"
     - name: Print result
       run: |
         echo "id: ${{ steps.last_release.outputs.id }}"
