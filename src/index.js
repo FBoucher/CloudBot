@@ -82,17 +82,17 @@ app.post("/savetofile", (req, res) => {
 
 
 app.get("/loadfromfile", (req, res) => {
-    console.log("..l.")
+    console.log("..loading from file..")
 
     if(true){
 
 
-        fs.readFile('streamSession.json', 'utf-8', (err, data) => {
+        fs.readFile('io/streamSession.json', 'utf-8', (err, data) => {
             if (err) {
                 res.json({error:err}) 
             }
             console.log("JSON data is load.");
-            //console.log("... Trace: " + data.toString());
+            console.log("... Trace: " + data.toString());
             const streamSession = JSON.parse(data);
             res.send(streamSession)
         });
