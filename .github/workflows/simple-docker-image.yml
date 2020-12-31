@@ -10,6 +10,7 @@ jobs:
       with:
           owner: FBoucher
           repo: CloudBot
+          excludes: release, draft
     - uses: actions/checkout@v2
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
