@@ -83,12 +83,38 @@ This project is now available in a container. You can find it on: [https://hub.d
 
 - The container by default uses the port 3000, you can map it to a different one if you want to keep 3000 available for some other node development (in the command below, the chat bot will be available at http://localhost:3001). 
 
-- To export the stream notes mount a volume. The `${PWD}` is the current local folder on the host. The file `secret.js` also goes in this folder.
+- The `${PWD}` is the current local folder on the host. This folder MUST CONTAINED: 
+  - a file `secret.js`  with a auth key in it.
+
+    ```javascript
+    const authToken = "oauth:____________________";
+    ```
+
+  - a file `streamSession.json` To initialize the sessions.
+
+    ```json
+    {
+      "Project": "",
+      "Id": 42,
+      "DateTimeStart": "",
+      "DateTimeEnd": "",
+      "Notes": [],
+      "UserSession": [],
+      "NewFollowers": [],
+      "Raiders": [],
+      "Subscribers": [],
+      "Hosts": [],
+      "Cheerers": [],
+      "TimeLogs": [],
+      "Todos": [],
+      "Reminders": []
+    }
+    ```
 
 Here an example how to instantiate the chatbot.
 
 ```bash
-docker run -p 3001:3000 -d -v ${PWD}:/usr/src/app/io fboucher/cloudbot
+docker run -p 3001:3000 -d -v ${PWD}:/usr/src/app/io  --name ceebee fboucher/cloudbot:latest
 ```
 
 

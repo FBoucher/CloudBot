@@ -169,9 +169,9 @@
                 else if( flags.broadcaster &&  command === "reminder-add" ) 
                 {
                     console.log( "!reminder-add was typed in chat" );
-                    if(str.includes("|"))
+                    if(message.includes("|"))
                     {
-                        var reminderDetail = str.split("|");
+                        var reminderDetail = message.split("|");
                         addReminder(reminderDetail[0], reminderDetail[1]);
                     }
                     else{
