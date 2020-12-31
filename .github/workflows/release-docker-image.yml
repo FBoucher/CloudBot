@@ -17,6 +17,9 @@ jobs:
         name: ${{secrets.DOCKER_USER}}/cloudbot
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ steps.vars.RELEASE_VERSION }}"
+        tags: "latest,${{ steps.vars.outputs.RELEASE_VERSION }}"
+    - name: "Print result"
+    run: |
+      echo "myReleaseVer: ${{ steps.vars.outputs.RELEASE_VERSION }}"
 
 
