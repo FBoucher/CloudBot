@@ -19,7 +19,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest,${{ steps.vars.outputs.RELEASE_VERSION }}"
     - name: "Print result"
-    run: |
-      echo "myReleaseVer: ${{ steps.vars.outputs.RELEASE_VERSION }}"
+        run: |
+          echo "myReleaseVer: ${{ steps.vars.outputs.RELEASE_VERSION }}"
 
 
