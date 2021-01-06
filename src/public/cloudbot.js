@@ -713,7 +713,7 @@ Generate_streamSessions = function()
 
 GenerateSessiontInfo = function()
 {
-    let sessionSection = "\n## Project\n\n"
+    let sessionSection = "\n### Project\n\n"
     sessionSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
 
     sessionSection += GenerateTodoSection();
@@ -737,7 +737,7 @@ GenerateCloudiesInfo = function()
 GenerateNewFollowerSection = function()
 {
     if(_streamSession.NewFollowers.length > 0){
-        let followerSection = "\n## New Followers\n\n"
+        let followerSection = "\n### New Followers\n\n"
 
         for(userName of _streamSession.NewFollowers)
         {
@@ -753,7 +753,7 @@ GenerateNewFollowerSection = function()
 GenerateRaidersSection = function()
 {
     if(_streamSession.Raiders.length > 0){
-        let raidersSection = "\n## Raids\n\n"
+        let raidersSection = "\n### Raids\n\n"
 
         for(raider of _streamSession.Raiders)
         {
@@ -770,7 +770,7 @@ GenerateRaidersSection = function()
 GenerateHostSection = function()
 {
     if(_streamSession.Hosts.length > 0){
-        let hostSection = "\n## Hosts\n\n"
+        let hostSection = "\n### Hosts\n\n"
 
         for(userName of _streamSession.Hosts)
         {
@@ -787,7 +787,7 @@ GenerateHostSection = function()
 GenerateTodoSection = function()
 {
     if(_streamSession.Todos.length > 0){
-        let todoSection = "\n## TodDos\n\n"
+        let todoSection = "\n### TodDos\n\n"
 
         _streamSession.Todos.forEach(element => {
             const checkbox = (element.status == TodoStatusEnum.done) ? "[X]": "[ ]";
@@ -807,7 +807,7 @@ GenerateTodoSection = function()
 GenerateCheersSection = function()
 {
     if(_streamSession.Cheerers.length > 0){
-        let cheerersSection = "\n## Cheers\n\n"
+        let cheerersSection = "\n### Cheers\n\n"
 
         for(cheerer of _streamSession.Cheerers)
         {
@@ -824,11 +824,11 @@ GenerateCheersSection = function()
 GenerateTimeLogSection = function()
 {
     if(_streamSession.TimeLogs.length > 0){
-        let timeLogsSection = "\n## TimeLogs\n\n"
+        let timeLogsSection = "\n### TimeLogs\n\n"
 
         for(timeLog of _streamSession.TimeLogs)
         {
-            timeLogsSection += `${timeLog.time} ${timeLog.message}\n`;
+            timeLogsSection += `    ${timeLog.time} ${timeLog.message}\n`;
         }
 
         return timeLogsSection;
@@ -842,13 +842,13 @@ GenerateParachuteSection = function(){
 
     if(_streamSession.UserSession.length > 0){
         const today = new Date();
-        let parachuteSection = "\n## Game Results\n\n"
+        let parachuteSection = "\n### Game Results\n\n"
         
         var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
         for ( i=0; i < sortedUsers.length; i++) {
             if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
-                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
+                parachuteSection += `- [@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
             }
         }
         return parachuteSection;
@@ -861,7 +861,7 @@ GenerateParachuteSection = function(){
 GenerateExtraInfo = function(){
 
     if(_streamSession.Notes.length > 0){
-        let noteSection = "\n## Notes/ References / Snippets\n\n"
+        let noteSection = "\n### Notes/ References / Snippets\n\n"
 
         for(note of _streamSession.Notes){
             noteSection += `- ${note}\n`;
