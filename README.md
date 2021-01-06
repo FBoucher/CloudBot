@@ -29,7 +29,9 @@ Tools:
 - **!time** <text>: Add a time log to the show notes (those are used to create timestamps on YouTube)
 - **!attention** <text>: Play a notification sound and draw the text in the screen.
 - **!note** <text>: Add a note/ code snippet / url useful during the stream
-
+- **!cmd**, **!command**, **!commands**: Display in the chat the URL back to this list.
+- **!referal**, **!referals**: Display in the chat the URL(s) of Frank's referal(s).
+- **!livecoder**, **!livecoders**: Provide more info about Live Codersin the chat.
 
 Only Broadcaster:
 - **!scores**: display table of highest scores
@@ -37,6 +39,7 @@ Only Broadcaster:
 - **!load**: Load the file containing the previous session data.
 - **!save**: Save in a local file `streamSession.json` the current session data.
 - **!talk**: The bot will repete the message
+- **!so**  <text>: shout-out! to user.
 
 - **!todo-add** <text>:  Add a new To-Do
 - **!todo-start** <number>:  Set the identified To-Do as active

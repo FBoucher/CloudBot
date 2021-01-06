@@ -165,6 +165,30 @@
                     console.log( "!attention was typed in chat" );
                     Attention(user, message);
                 }
+                else if( command === "referal" || command === "referals") 
+                {
+                    console.log( "!referal was typed in chat" );
+                    ChatBotSay(`Interested about GitKraken? Check-out: http://c5m.ca/gitkraken it's free!`);
+                }
+                else if( command === "livecoders" || command === "livecoder") 
+                {
+                    console.log( "!livecoder was typed in chat" );
+                    ChatBotSay(`Frank is part of the Live Coders. It's a Twitch teams that support Coders/Developers/Technologists who are also Content Creators. Learn more about then here: https://livecoders.dev`);
+                }
+                else if( command === "cmd" || command === "commands" || command === "command") 
+                {
+                    console.log( "!cmd was typed in chat" );
+                    ChatBotSay(`If Frank did is job correctly you will find a list of all the command here: https://github.com/FBoucher/CloudBot#currently-available-commands`);
+                }
+                else if(  flags.broadcaster && command === "so" ) 
+                {
+                    console.log( "!so was typed in chat" );
+                    if ((message !== undefined) && (message !== null) && (message !== ""))
+                    {
+                        ChatBotSay(`==> Check-out the channel of twitch.tv/${message} `);
+                    }
+                }
+
                 //-- Reminders ---------
                 else if( flags.broadcaster &&  command === "reminder-add" ) 
                 {
