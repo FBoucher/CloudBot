@@ -140,7 +140,8 @@ app.listen(port, () => console.log(`Example app listening at http://localhost:${
 createImage = function(imageName, message){
 
     fs.mkdir('./public/medias/generated', { recursive: true }, (err) => {
-        if (err) throw err;
+        if (err) 
+            console.log(`!!! Error: ${err}`);
 
         fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
             color: 'white', 
@@ -158,12 +159,14 @@ CleanUpGeneratedImages = function(){
     const directory = './public/medias/generated';
 
     fs.readdir(directory, (err, files) => {
-    if (err) throw err;
+        if (err) 
+            console.log(`!!! Error: ${err}`);
 
-    for (const file of files) {
-        fs.unlink(path.join(directory, file), err => {
-        if (err) throw err;
-        });
-    }
+        for (const file of files) {
+            fs.unlink(path.join(directory, file), err => {
+                if (err) 
+                    console.log(`!!! Error: ${err}`);
+            });
+        }
     });
 }
