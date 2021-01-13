@@ -156,17 +156,19 @@ createImage = function(imageName, message){
 
 
 CleanUpGeneratedImages = function(){
-    const directory = './public/medias/generated';
-
-    fs.readdir(directory, (err, files) => {
-        if (err) 
-            console.log(`!!! Error: ${err}`);
-
-        for (const file of files) {
-            fs.unlink(path.join(directory, file), err => {
-                if (err) 
-                    console.log(`!!! Error: ${err}`);
-            });
-        }
-    });
+    const directory = './public/medias/generated/';
+    
+    if (fs.existsSync(directory)){
+        fs.readdir(directory, (err, files) => {
+            if (err) 
+                console.log(`!!! Error: ${err}`);
+    
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), err => {
+                    if (err) 
+                        console.log(`!!! Error: ${err}`);
+                });
+            }
+        });
+    }
 }
