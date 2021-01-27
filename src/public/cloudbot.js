@@ -685,28 +685,28 @@ StreamNoteStart = async function(projectName)
 StreamNoteStop = function()
 {
     SaveToFile();
-    let _streamSessions = Generate_streamSessions();
-    //console.log('Notes: ', _streamSessions);
-    SaveNotesToFile(_streamSessions);
+    let streamNotes = Generate_streamSessions();
+    //console.log('Notes: ', streamNotes);
+    SaveNotesToFile(streamNotes);
 }
 
 
 Generate_streamSessions = function()
 {
-    let _streamSession = "";
+    let streamNotes = "";
 
     //Project detail
-    _streamSession += GenerateSessiontInfo();
+    streamNotes += GenerateSessiontInfo();
 
     // Stream Details
-    _streamSession += GenerateTimeLogSection();
+    streamNotes += GenerateTimeLogSection();
     
     // Cloudies info
-    _streamSession += GenerateCloudiesInfo();
+    streamNotes += GenerateCloudiesInfo();
 
     // Goal extra
-    _streamSession += GenerateExtraInfo();
-    return _streamSession;
+    streamNotes += GenerateExtraInfo();
+    return streamNotes;
 }
 
 
