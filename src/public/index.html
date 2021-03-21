@@ -1,348 +1,527 @@
 <html>
-    <head>
-        <title>Cloud Stuff</title>
-        <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" ></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-        <script src="/io/secret.js"></script>
-        <script src="/public/cloudbot.js"></script>
-        <style>
-            body, h1, p {
-                color: black;
-                /*font-size: 50px;*/
-                background-color: whitesmoke;
-                }
 
-            table {
-                font-size: 50px;
+<head>
+    <title>Cloud Stuff</title>
+    <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"
+        type="text/css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/io/secret.js"></script>
+    <script src="/public/cloudbot.js"></script>
+    <style>
+        body,
+        h1,
+        p {
+            color: black;
+            /*font-size: 50px;*/
+            background-color: whitesmoke;
+        }
+
+        table {
+            font-size: 50px;
+        }
+
+        th {
+            font-weight: bold;
+            border: 1px solid #cccccc;
+            /* Change the border-color of heading here */
+            padding: 8px;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            /* Change the border-color of cells here */
+            padding: 8px;
+        }
+
+        .toast-title {
+            font-size: 200%;
+        }
+
+        .textBubble {
+            position: absolute;
+            top: 30px;
+            left: 600px;
+            z-index: 3;
+        }
+
+        .nuage {
+            z-index: 2;
+        }
+
+        #todoArea {
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            width: 200px;
+            margin: 1px;
+            box-shadow: 5px 10px 5px #888888;
+            border: 3px solid rgb(187, 239, 255);
+            background-color: rgb(187, 239, 255);
+        }
+
+        #todoArea,
+        h4 {
+            margin: 5px;
+        }
+
+        #todoList {
+            background-color: ghostwhite;
+            border-top: 2px solid rgb(187, 239, 255);
+        }
+
+        .todo.done {
+            text-decoration: line-through;
+        }
+
+        .todo.cancel {
+            color: dimgray;
+            background-color: #cccccc;
+        }
+
+        .todo.inProgress {
+            background-color: dodgerblue;
+        }
+
+        @keyframes Right2Left {
+            from {
+                left: 110%;
             }
 
-            th {
-                font-weight: bold;
-                border: 1px solid #cccccc; /* Change the border-color of heading here */
-                padding: 8px;
+            to {
+                left: -20%;
+            }
+        }
+
+        .movingCloud {
+            animation-name: Right2Left;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-fill-mode: backwards;
+            position: absolute;
+        }
+
+        @keyframes darkening {
+            0% {
+                filter: brightness(100%);
             }
 
-            td {
-                border: 1px solid #cccccc; /* Change the border-color of cells here */
-                padding: 8px;
+            100% {
+                filter: brightness(30%);
+            }
+        }
+
+        .darkcloud {
+            animation-name: darkening;
+            /* animation-iteration-count: 1; */
+            animation-fill-mode: forwards;
+            animation-duration: 5s;
+        }
+
+        @keyframes brighten {
+            0% {
+                filter: brightness(30%);
             }
 
-            .toast-title{
-                font-size: 200%;
+            100% {
+                filter: brightness(100%);
+            }
+        }
+
+        .lightcloud {
+            animation-name: brighten;
+            /* animation-iteration-count: 1; */
+            animation-fill-mode: forwards;
+            animation-duration: 5s;
+        }
+
+
+        .rain {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .rain.back-row {
+            display: none;
+            z-index: 1;
+            bottom: 60px;
+            opacity: 0.5;
+        }
+
+        div.back-row-toggle .rain.back-row {
+            display: block;
+        }
+
+        .drop {
+            position: absolute;
+            bottom: 100%;
+            width: 15px;
+            height: 120px;
+            pointer-events: none;
+            animation: drop 0.5s linear infinite;
+        }
+
+        @keyframes drop {
+            0% {
+                transform: translateY(0vh);
             }
 
-            .textBubble{
-                position:absolute;
-                top: 30px;
-                left: 600px;
-                z-index: 3;
+            75% {
+                transform: translateY(90vh);
             }
 
-            .nuage{
-                z-index: 2;
+            100% {
+                transform: translateY(90vh);
+            }
+        }
+
+        .stem {
+            width: 1px;
+            height: 60%;
+            margin-left: 7px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.25));
+            animation: stem 0.5s linear infinite;
+        }
+
+        @keyframes stem {
+            0% {
+                opacity: 1;
             }
 
-            #todoArea{
-                position: absolute;
-                right: 30px;
-                top: 30px;
-                width: 200px;
-                margin: 1px;
-                box-shadow: 5px 10px 5px #888888;
-                border: 3px solid rgb(187, 239, 255);
-                background-color: rgb(187, 239, 255);
+            65% {
+                opacity: 1;
             }
 
-            #todoArea, h4{
-                margin: 5px;  
+            75% {
+                opacity: 0;
             }
 
-            #todoList{
-                background-color: ghostwhite;
-                border-top: 2px solid  rgb(187, 239, 255);
+            100% {
+                opacity: 0;
             }
-            .todo.done{
-                text-decoration: line-through;
-            }
-            .todo.cancel{
-                color: dimgray;
-                background-color: #cccccc;
-            }
-            .todo.inProgress{
-                background-color:dodgerblue;
-            }
-        </style>
-    </head>
-    <body>
+        }
 
-        <h1 id="cbTitle"></h1>
-        <p id="lastChatMsg"></p>
-        <div id="imageViewer"></div>
-        <div id="todoArea"><h4>To-Dos</h4>
-            <div id="todoList"></div>
+        .splat {
+            width: 15px;
+            height: 10px;
+            border-top: 2px dotted rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            opacity: 1;
+            transform: scale(0);
+            animation: splat 0.5s linear infinite;
+            display: none;
+        }
+
+        div.splat-toggle .splat {
+            display: block;
+        }
+
+        @keyframes splat {
+            0% {
+                opacity: 1;
+                transform: scale(0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: scale(0);
+            }
+
+            90% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 id="cbTitle"></h1>
+    <p id="lastChatMsg"></p>
+    <div id="imageViewer"></div>
+    <div id="todoArea">
+        <h4>To-Dos</h4>
+        <div id="todoList"></div>
+    </div>
+    <div class="back-row-toggle splat-toggle">
+        <div id="sky">
         </div>
-        
-        <script type="text/javascript">
-            //import SoundEnum from './cloudbot.js';
-
-            let _streamSession = new StreamSession();
-            _streamSession.Id = Math.floor((Math.random() * 100) );
-            
-            //Add Default Reminders
-            _streamSession.Reminders.push(new Reminder("project", "Did you assign a project yet?"));
-
-            ComfyJS.onCommand = async ( user, command, message, flags, extra ) => {
-                
-                user = user.toLowerCase();
-
-                //== PUBLIC Commands Section =====================================
-                //== 
-
-                //-- fun ---------
-                if( command === "shout" ) {
-                    ChatBotShout(message);
-                }
-
-                else if( flags.broadcaster && command === "ok-bye" ) {
-                    ComfyJS.Disconnect();
-                }
-                else if( flags.broadcaster && command === "talk" ) {
-                    ChatBotSay(message);
-                }
-                else if( flags.broadcaster && command === "cloud" ) {
-                    cloud("Thumbs-up");
-                }
-                else if( flags.broadcaster && command === "clean" ) {
-                    console.log( "!clean was typed in chat" );
-                    clean();
-                }
-                else if( flags.broadcaster && command === "todo-add" ) {
-                    console.log( "!addTodo was typed in chat" );
-                    addTodo(message);
-                }
-                else if( flags.broadcaster && command === "todo-start" ) {
-                    console.log( "!todo-start was typed in chat" );
-                    SetTodoStatus(message, TodoStatusEnum.inProgress);
-                }
-                else if( flags.broadcaster && command === "todo-done" ) {
-                    console.log( "!todo-done was typed in chat" );
-                    SetTodoStatus(message, TodoStatusEnum.done);
-                }
-                else if( flags.broadcaster && command === "todo-cancel" ) {
-                    console.log( "!todo-cancel was typed in chat" );
-                    SetTodoStatus(message, TodoStatusEnum.cancel);
-                }
-                else if(command === "scores" ) 
-                {
-                    scores();
-                }
-                else if( command === "stats" ) 
-                {
-                    console.log( "!stats was typed in chat" );
-                    StatsFor(user);
-                }
-                else if( command === "drop" ) 
-                {
-                    console.log( "!drop was typed in chat" );
-                    IncrementDropCounter(user);
-                }
-
-                //-- tools ---------
-                else if( command === "time" ) 
-                {
-                    console.log( "!time was typed in chat" );
-                    CreateTimeLog(message, user);
-                }
-                else if( command === "note" ) 
-                {
-                    console.log( "!note was typed in chat" );
-                    SavingNote(message);
-                }
-                else if( command === "attention" ) 
-                {
-                    console.log( "!attention was typed in chat" );
-                    Attention(user, message);
-                }
-                else if( command === "referral" || command === "referrals" || command === "referal" || command === "referals") 
-                {
-                    console.log( "!referral was typed in chat" );
-                    ChatBotSay(`Interested about GitKraken? Check-out: http://c5m.ca/gitkraken it's free!`);
-                }
-                else if( command === "livecoders" || command === "livecoder") 
-                {
-                    console.log( "!livecoder was typed in chat" );
-                    ChatBotSay(`Frank is part of the Live Coders. It's a Twitch teams that support Coders/Developers/Technologists who are also Content Creators. Learn more about then here: https://livecoders.dev`);
-                }
-                else if( command === "cmd" || command === "commands" || command === "command") 
-                {
-                    console.log( "!cmd was typed in chat" );
-                    ChatBotSay(`If Frank did is job correctly you will find a list of all the command here: https://github.com/FBoucher/CloudBot#currently-available-commands`);
-                }
-                else if(  flags.broadcaster && command === "so" ) 
-                {
-                    console.log( "!so was typed in chat" );
-                    if ((message !== undefined) && (message !== null) && (message !== ""))
-                    {
-                        ChatBotSay(`==> Check-out the channel of twitch.tv/${message} `);
-                    }
-                }
-
-                //-- Reminders ---------
-                else if( flags.broadcaster &&  command === "reminder-add" ) 
-                {
-                    console.log( "!reminder-add was typed in chat" );
-                    if(message.includes("|"))
-                    {
-                        var reminderDetail = message.split("|");
-                        addReminder(reminderDetail[0], reminderDetail[1]);
-                    }
-                    else{
-                        ChatBotSay(`Hey ${user}, please use "|" to separate the name and the description of the Reminder.`);
-                    }
-                    
-                }
-                else if( flags.broadcaster &&  command === "reminder-stop" ) 
-                {
-                    console.log( "!reminder-stop was typed in chat" );
-                    SetReminderStatus(message, ReminderStatusEnum.done);
-                }
-                else if( flags.broadcaster &&  command === "reminder-pause" ) 
-                {
-                    console.log( "!reminder-pause was typed in chat" );
-                    SetReminderStatus(message, ReminderStatusEnum.inactive);
-                }
+        <div class="rain front-row"></div>
+        <div class="rain back-row"></div>   
+        <div class="toggles">
+            <div class="splat-toggle toggle active"></div>
+            <div class="back-row-toggle toggle active"></div>
+          </div> 
+    </div>
+    
 
 
-                //== SOUNDS Section =====================================
-                //== 
-                else if( flags.broadcaster && command === "ok-bye" ) {
-                    ComfyJS.Disconnect();
-                }
-                else if( flags.broadcaster && command === "talk" ) {
-                    ChatBotSay();
-                }
-                else if( command === "cloud" ) {
-                    cloud("Thumbs-up");
-                }
-                else if( flags.broadcaster && command === "clean" ) {
-                    console.log( "!clean was typed in chat" );
-                    clean();
-                }
-                else if( flags.broadcaster && command === "hello" ) 
-                {
-                    console.log( "-->streamSession: ", _streamSession );
-                    hello(user);
-                }
-                else if( flags.broadcaster && command === "save" ) 
-                {
-                    console.log( "!save was typed in chat" );
-                    SaveToFile();
-                }
-                else if( flags.broadcaster && command === "load" ) 
-                {
-                    console.log( "!load was typed in chat" );
-                    LoadFromFile(null, true, null);
-                }
-                else if( flags.broadcaster && command === "start" ) 
-                {
-                    console.log( "!start was typed in chat" );
-                    StreamNoteStart(message);
-                }
-                else if( flags.broadcaster && command === "stop" ) 
-                {
-                    console.log( "!stop was typed in chat" );
-                    StreamNoteStop();
-                }
+    <script type="text/javascript">
+        //import SoundEnum from './cloudbot.js';
 
-                //=====================================================
+        let _streamSession = new StreamSession();
+        _streamSession.Id = Math.floor((Math.random() * 100));
 
+        //Add Default Reminders
+        _streamSession.Reminders.push(new Reminder("project", "Did you assign a project yet?"));
 
-                //== SOUNDS Section =====================================
-                //== 
-                else if( command === "yeah" ) 
-                {
-                    console.log( "!yeah was typed in chat" );
-                    playSound(SoundEnum.yeah);
-                }
-                else if( command === "bad" ) 
-                {
-                    console.log( "!bad was typed in chat" );
-                    playSound(SoundEnum.badFeeling);
-                }
-                else if( command === "bonjour" ) 
-                {
-                    console.log( "!bonjour was typed in chat" );
-                    playSound(SoundEnum.bonjourHi);
-                }
-                else if( command === "knock" ) 
-                {
-                    console.log( "!knock was typed in chat" );
-                    playSound(SoundEnum.doorknock);
-                }
+        ComfyJS.onCommand = async (user, command, message, flags, extra) => {
 
-                //=====================================================
-            }
+            user = user.toLowerCase();
 
-            ComfyJS.onChat = ( user, message, flags, self, extra ) => {
-               
-                if( flags.broadcaster) {
-                    console.log( "...broadcaster message" );
-                    ParseMessage(message);
-                }
-                else if( user === "Streamlabs") {
-                    console.log( "...Streamlabs message" );
-                    ParseMessage(message);
-                }
-            }
-
-            //== Events Section =====================================
+            //== PUBLIC Commands Section =====================================
             //== 
-            ComfyJS.onRaid = ( user, viewers, extra ) => {
-                LogRaid(user, viewers);
+
+            //-- fun ---------
+            if (command === "shout") {
+                ChatBotShout(message);
             }
 
-            ComfyJS.onSub = ( user, message, subTierInfo, extra ) => {
-                console.log( "...onSub" );
-                LogSub(user, message, subTierInfo, 1, 0);
+            else if (flags.broadcaster && command === "ok-bye") {
+                ComfyJS.Disconnect();
+            }
+            else if (flags.broadcaster && command === "talk") {
+                ChatBotSay(message);
+            }
+            else if (flags.broadcaster && command === "cloud") {
+                cloud("Thumbs-up");
+            }
+            else if (flags.broadcaster && command === "clean") {
+                console.log("!clean was typed in chat");
+                clean();
+            }
+            else if (flags.broadcaster && command === "todo-add") {
+                console.log("!addTodo was typed in chat");
+                addTodo(message);
+            }
+            else if (flags.broadcaster && command === "todo-start") {
+                console.log("!todo-start was typed in chat");
+                SetTodoStatus(message, TodoStatusEnum.inProgress);
+            }
+            else if (flags.broadcaster && command === "todo-done") {
+                console.log("!todo-done was typed in chat");
+                SetTodoStatus(message, TodoStatusEnum.done);
+            }
+            else if (flags.broadcaster && command === "todo-cancel") {
+                console.log("!todo-cancel was typed in chat");
+                SetTodoStatus(message, TodoStatusEnum.cancel);
+            }
+            else if (command === "scores") {
+                scores();
+            }
+            else if (command === "stats") {
+                console.log("!stats was typed in chat");
+                StatsFor(user);
+            }
+            else if (command === "drop") {
+                console.log("!drop was typed in chat");
+                IncrementDropCounter(user);
             }
 
-            ComfyJS.onResub = ( user, message, streamMonths, cumulativeMonths, subTierInfo, extra  ) => {
-                console.log( "...onResub" );
-                LogSub(user, message, subTierInfo, streamMonths, cumulativeMonths);
+            //-- Clouds ---------
+            else if (flags.broadcaster && command === "rain") {
+                console.log("!rain was typed in chat");
+                document.getElementById("sky").className = "darkcloud";
+
+                setTimeout(() => {
+                    makeItRain();
+                    playSound(SoundEnum.rain, true);
+                }, 5000);
+
+            }
+            else if (flags.broadcaster && command === "sun") {
+                console.log("!sun was typed in chat");
+                $('.rain').empty();
+                stopSound(SoundEnum.rain, true);
+                document.getElementById("sky").className = "lightcloud";
             }
 
-            ComfyJS.onHosted = ( user, viewers, autohost, extra ) => {
-                LogHost(user, viewers, autohost, extra );
+            //-- tools ---------
+            else if (command === "time") {
+                console.log("!time was typed in chat");
+                CreateTimeLog(message, user);
+            }
+            else if (command === "note") {
+                console.log("!note was typed in chat");
+                SavingNote(message);
+            }
+            else if (command === "attention") {
+                console.log("!attention was typed in chat");
+                Attention(user, message);
+            }
+            else if (command === "referral" || command === "referrals" || command === "referal" || command === "referals") {
+                console.log("!referral was typed in chat");
+                ChatBotSay(`Interested about GitKraken? Check-out: http://c5m.ca/gitkraken it's free!`);
+            }
+            else if (command === "livecoders" || command === "livecoder") {
+                console.log("!livecoder was typed in chat");
+                ChatBotSay(`Frank is part of the Live Coders. It's a Twitch teams that support Coders/Developers/Technologists who are also Content Creators. Learn more about then here: https://livecoders.dev`);
+            }
+            else if (command === "cmd" || command === "commands" || command === "command") {
+                console.log("!cmd was typed in chat");
+                ChatBotSay(`If Frank did is job correctly you will find a list of all the command here: https://github.com/FBoucher/CloudBot#currently-available-commands`);
+            }
+            else if (flags.broadcaster && command === "so") {
+                console.log("!so was typed in chat");
+                if ((message !== undefined) && (message !== null) && (message !== "")) {
+                    ChatBotSay(`==> Check-out the channel of twitch.tv/${message} `);
+                }
             }
 
-            ComfyJS.onCheer = (  user, message, bits, flags, extra ) => {
-                LogCheer( user, message, bits, flags, extra );
+            //-- Reminders ---------
+            else if (flags.broadcaster && command === "reminder-add") {
+                console.log("!reminder-add was typed in chat");
+                if (message.includes("|")) {
+                    var reminderDetail = message.split("|");
+                    addReminder(reminderDetail[0], reminderDetail[1]);
+                }
+                else {
+                    ChatBotSay(`Hey ${user}, please use "|" to separate the name and the description of the Reminder.`);
+                }
+
+            }
+            else if (flags.broadcaster && command === "reminder-stop") {
+                console.log("!reminder-stop was typed in chat");
+                SetReminderStatus(message, ReminderStatusEnum.done);
+            }
+            else if (flags.broadcaster && command === "reminder-pause") {
+                console.log("!reminder-pause was typed in chat");
+                SetReminderStatus(message, ReminderStatusEnum.inactive);
+            }
+
+
+            //== SOUNDS Section =====================================
+            //== 
+            else if (flags.broadcaster && command === "ok-bye") {
+                ComfyJS.Disconnect();
+            }
+            else if (flags.broadcaster && command === "talk") {
+                ChatBotSay();
+            }
+            else if (command === "cloud") {
+                cloud("Thumbs-up");
+            }
+            else if (flags.broadcaster && command === "clean") {
+                console.log("!clean was typed in chat");
+                clean();
+            }
+            else if (flags.broadcaster && command === "hello") {
+                console.log("-->streamSession: ", _streamSession);
+                hello(user);
+            }
+            else if (flags.broadcaster && command === "save") {
+                console.log("!save was typed in chat");
+                SaveToFile();
+            }
+            else if (flags.broadcaster && command === "load") {
+                console.log("!load was typed in chat");
+                LoadFromFile(null, true, null);
+            }
+            else if (flags.broadcaster && command === "start") {
+                console.log("!start was typed in chat");
+                StreamNoteStart(message);
+            }
+            else if (flags.broadcaster && command === "stop") {
+                console.log("!stop was typed in chat");
+                StreamNoteStop();
             }
 
             //=====================================================
-            // Recuring tasks
 
-            (function AutoSave(){
-                console.log( `ChatBot #${_streamSession.Id} as save his data` );
-                SaveToFile(false);
-                setTimeout(AutoSave, 600000);
-            })();
 
-            (function TimeToCheckReminders(){
-                console.log( `ChatBot #${_streamSession.Id} check his reminders` );
-                CheckReminders();
-                setTimeout(TimeToCheckReminders, 300000);
-            })();
+            //== SOUNDS Section =====================================
+            //== 
+            else if (command === "yeah") {
+                console.log("!yeah was typed in chat");
+                playSound(SoundEnum.yeah);
+            }
+            else if (command === "bad") {
+                console.log("!bad was typed in chat");
+                playSound(SoundEnum.badFeeling);
+            }
+            else if (command === "bonjour") {
+                console.log("!bonjour was typed in chat");
+                playSound(SoundEnum.bonjourHi);
+            }
+            else if (command === "knock") {
+                console.log("!knock was typed in chat");
+                playSound(SoundEnum.doorknock);
+            }
 
-            //
-            // Define a const authToken in secret.js get the token at
-            // https://twitchapps.com/tmi/
-            //
+            //=====================================================
+        }
 
-            ComfyJS.Init( "fboucheros", authToken );
-            
-          </script>
-    </body>
+        ComfyJS.onChat = (user, message, flags, self, extra) => {
+
+            if (flags.broadcaster) {
+                console.log("...broadcaster message");
+                ParseMessage(message);
+            }
+            else if (user === "Streamlabs") {
+                console.log("...Streamlabs message");
+                ParseMessage(message);
+            }
+        }
+
+        //== Events Section =====================================
+        //== 
+        ComfyJS.onRaid = (user, viewers, extra) => {
+            LogRaid(user, viewers);
+        }
+
+        ComfyJS.onSub = (user, message, subTierInfo, extra) => {
+            console.log("...onSub");
+            LogSub(user, message, subTierInfo, 1, 0);
+        }
+
+        ComfyJS.onResub = (user, message, streamMonths, cumulativeMonths, subTierInfo, extra) => {
+            console.log("...onResub");
+            LogSub(user, message, subTierInfo, streamMonths, cumulativeMonths);
+        }
+
+        ComfyJS.onHosted = (user, viewers, autohost, extra) => {
+            LogHost(user, viewers, autohost, extra);
+        }
+
+        ComfyJS.onCheer = (user, message, bits, flags, extra) => {
+            LogCheer(user, message, bits, flags, extra);
+        }
+
+        //=====================================================
+        // Recuring tasks
+
+        (function AutoSave() {
+            console.log(`ChatBot #${_streamSession.Id} as save his data`);
+            SaveToFile(false);
+            setTimeout(AutoSave, 600000);
+        })();
+
+        (function TimeToCheckReminders() {
+            console.log(`ChatBot #${_streamSession.Id} check his reminders`);
+            CheckReminders();
+            setTimeout(TimeToCheckReminders, 300000);
+        })();
+
+        //
+        // Define a const authToken in secret.js get the token at
+        // https://twitchapps.com/tmi/
+        //
+
+        ComfyJS.Init("fboucheros", authToken);
+        for (var i = 0; i < 25; i++)
+            CreateCloud();
+
+    </script>
+</body>
+
 </html>
