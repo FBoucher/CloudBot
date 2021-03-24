@@ -335,14 +335,14 @@
 
                 setTimeout(() => {
                     makeItRain();
-                    playSound(SoundEnum.rain, true);
+                    playSound("rain", SoundEnum.rain, true);
                 }, 5000);
 
             }
             else if (flags.broadcaster && command === "sun") {
                 console.log("!sun was typed in chat");
                 $('.rain').empty();
-                stopSound(SoundEnum.rain, true);
+                stopSound("rain", SoundEnum.rain, true);
                 document.getElementById("sky").className = "lightcloud";
             }
 
@@ -443,19 +443,19 @@
             //== 
             else if (command === "yeah") {
                 console.log("!yeah was typed in chat");
-                playSound(SoundEnum.yeah);
+                playSound("yeah", SoundEnum.yeah);
             }
             else if (command === "bad") {
                 console.log("!bad was typed in chat");
-                playSound(SoundEnum.badFeeling);
+                playSound("badFeeling", SoundEnum.badFeeling);
             }
             else if (command === "bonjour") {
                 console.log("!bonjour was typed in chat");
-                playSound(SoundEnum.bonjourHi);
+                playSound("bonjourHi", SoundEnum.bonjourHi);
             }
             else if (command === "knock") {
                 console.log("!knock was typed in chat");
-                playSound(SoundEnum.doorknock);
+                playSound("doorknock", SoundEnum.doorknock);
             }
 
             //=====================================================

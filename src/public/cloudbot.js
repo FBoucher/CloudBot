@@ -629,38 +629,35 @@ LoadStreamSession = function(data, projectName, isReload, callback)
     console.log('done loading:', _streamSession);
 }
 
-getCloudAudio = function(fileName, inLoop){
+getCloudAudio = function(name, fileName, inLoop){
 
-    let cbAudio = document.getElementById("cbAudio");
-    if(cbAudio)
+    let cbAudio = document.getElementById(name);
+    if(cbAudio){
         return cbAudio;
-
+    }
+        
     let audio = new Audio(fileName);
-    audio.id = "cbAudio";
+    audio.id = name;
     audio.loop = inLoop;
     document.body.appendChild(audio);
-    return getCloudAudio();
+    return getCloudAudio(name);
 }
 
-playSound = function(fileName)
+playSound = function(name, fileName)
 {
-    playSound(fileName, false);
+    playSound(name, fileName, false);
 }
 
-playSound = function(fileName, inLoop)
+playSound = function(name, fileName, inLoop)
 {
-    let cbAudio = getCloudAudio(fileName, inLoop);
-    //let audio = new Audio(fileName);
-    //audio.id = "cbAudio";
-    //audio.loop = inLoop;
+    let cbAudio = getCloudAudio(name, fileName, inLoop);
     cbAudio.play();
-    //document.body.appendChild(audio);
+
 }
 
-stopSound = function(fileName, inLoop)
+stopSound = function(name, fileName, inLoop)
 {
-    //let cbAudio = document.getElementById("cbAudio");
-    let cbAudio = getCloudAudio(fileName, inLoop);
+    let cbAudio = getCloudAudio(name, fileName, inLoop);
     cbAudio.pause();
 }
 
