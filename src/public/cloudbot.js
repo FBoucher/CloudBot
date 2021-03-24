@@ -325,7 +325,7 @@ HightScoreParty = function(user, score){
     //ChatBotShout(msg);
     DisplayNotification("New high score!", msg);
     cloud("Yeah");
-    playSound(SoundEnum.yeah);
+    playSound("yeah", SoundEnum.yeah);
 }
 
 
@@ -423,7 +423,7 @@ Attention = function(user, message)
   
         setTimeout(() => {
             ChatBotShow('Thumbs-up', result.msg)
-            playSound(SoundEnum.hmmhmm);
+            playSound("hmmhmm", SoundEnum.hmmhmm);
         }, 1000); 
         
     })
@@ -963,7 +963,7 @@ LogRaid = function(user, viewers){
 LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
 
     cloud("Yeah");
-    playSound(SoundEnum.yeah);
+    playSound("yeah", SoundEnum.yeah);
     _streamSession.Subscribers.push(new Subscriber(user, streamMonths));
 }
 
