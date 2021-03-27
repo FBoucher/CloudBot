@@ -853,6 +853,7 @@ GenerateTimeLogSection = function()
 {
     if(_streamSession.TimeLogs.length > 0){
         let timeLogsSection = "\n### TimeLogs\n\n"
+        timeLogsSection += `    00:00:00 Intro\n    00:00:10 Bonjour, Hi!\n`;
 
         for(timeLog of _streamSession.TimeLogs)
         {
