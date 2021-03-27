@@ -136,7 +136,9 @@ const SoundEnum = {
     bonjourHi : "public/medias/BonjourHi.mp3",
     badFeeling : "public/medias/badfeeling.mp3",
     doorknock: "public/medias/knocking-on-door.mp3",
-    hmmhmm: "public/medias/hmmhmm.mp3"
+    hmmhmm: "public/medias/hmmhmm.mp3",
+    rain: "public/medias/rain.mp4",
+    rainUmbrella: "public/medias/Rain-On-Umbrella.com.mp3"
 };
 
 const TodoStatusEnum = {
@@ -323,7 +325,7 @@ HightScoreParty = function(user, score){
     //ChatBotShout(msg);
     DisplayNotification("New high score!", msg);
     cloud("Yeah");
-    playSound(SoundEnum.yeah);
+    playSound("yeah", SoundEnum.yeah);
 }
 
 
@@ -421,7 +423,7 @@ Attention = function(user, message)
   
         setTimeout(() => {
             ChatBotShow('Thumbs-up', result.msg)
-            playSound(SoundEnum.hmmhmm);
+            playSound("hmmhmm", SoundEnum.hmmhmm);
         }, 1000); 
         
     })
@@ -627,10 +629,36 @@ LoadStreamSession = function(data, projectName, isReload, callback)
     console.log('done loading:', _streamSession);
 }
 
-playSound = function(fileName)
+getCloudAudio = function(name, fileName, inLoop){
+
+    let cbAudio = document.getElementById(name);
+    if(cbAudio){
+        return cbAudio;
+    }
+        
+    let audio = new Audio(fileName);
+    audio.id = name;
+    audio.loop = inLoop;
+    document.body.appendChild(audio);
+    return getCloudAudio(name);
+}
+
+playSound = function(name, fileName)
 {
-    var audio = new Audio(fileName);
-    audio.play();
+    playSound(name, fileName, false);
+}
+
+playSound = function(name, fileName, inLoop)
+{
+    let cbAudio = getCloudAudio(name, fileName, inLoop);
+    cbAudio.play();
+
+}
+
+stopSound = function(name, fileName, inLoop)
+{
+    let cbAudio = getCloudAudio(name, fileName, inLoop);
+    cbAudio.pause();
 }
 
 
@@ -685,35 +713,35 @@ StreamNoteStart = async function(projectName)
 StreamNoteStop = function()
 {
     SaveToFile();
-    let _streamSessions = Generate_streamSessions();
-    //console.log('Notes: ', _streamSessions);
-    SaveNotesToFile(_streamSessions);
+    let streamNotes = Generate_streamSessions();
+    //console.log('Notes: ', streamNotes);
+    SaveNotesToFile(streamNotes);
 }
 
 
 Generate_streamSessions = function()
 {
-    let _streamSession = "";
+    let streamNotes = "";
 
     //Project detail
-    _streamSession += GenerateSessiontInfo();
+    streamNotes += GenerateSessiontInfo();
 
     // Stream Details
-    _streamSession += GenerateTimeLogSection();
+    streamNotes += GenerateTimeLogSection();
     
     // Cloudies info
-    _streamSession += GenerateCloudiesInfo();
+    streamNotes += GenerateCloudiesInfo();
 
     // Goal extra
-    _streamSession += GenerateExtraInfo();
-    return _streamSession;
+    streamNotes += GenerateExtraInfo();
+    return streamNotes;
 }
 
 
 
 GenerateSessiontInfo = function()
 {
-    let sessionSection = "\n## Project\n\n"
+    let sessionSection = "\n### Project\n\n"
     sessionSection += "All the code for this project is available on GitHub: " + _streamSession.Project + " - https://github.com/FBoucher/" + _streamSession.Project + "\n";
 
     sessionSection += GenerateTodoSection();
@@ -737,7 +765,7 @@ GenerateCloudiesInfo = function()
 GenerateNewFollowerSection = function()
 {
     if(_streamSession.NewFollowers.length > 0){
-        let followerSection = "\n## New Followers\n\n"
+        let followerSection = "\n### New Followers\n\n"
 
         for(userName of _streamSession.NewFollowers)
         {
@@ -753,7 +781,7 @@ GenerateNewFollowerSection = function()
 GenerateRaidersSection = function()
 {
     if(_streamSession.Raiders.length > 0){
-        let raidersSection = "\n## Raids\n\n"
+        let raidersSection = "\n### Raids\n\n"
 
         for(raider of _streamSession.Raiders)
         {
@@ -770,7 +798,7 @@ GenerateRaidersSection = function()
 GenerateHostSection = function()
 {
     if(_streamSession.Hosts.length > 0){
-        let hostSection = "\n## Hosts\n\n"
+        let hostSection = "\n### Hosts\n\n"
 
         for(userName of _streamSession.Hosts)
         {
@@ -787,7 +815,7 @@ GenerateHostSection = function()
 GenerateTodoSection = function()
 {
     if(_streamSession.Todos.length > 0){
-        let todoSection = "\n## TodDos\n\n"
+        let todoSection = "\n### TodDos\n\n"
 
         _streamSession.Todos.forEach(element => {
             const checkbox = (element.status == TodoStatusEnum.done) ? "[X]": "[ ]";
@@ -807,7 +835,7 @@ GenerateTodoSection = function()
 GenerateCheersSection = function()
 {
     if(_streamSession.Cheerers.length > 0){
-        let cheerersSection = "\n## Cheers\n\n"
+        let cheerersSection = "\n### Cheers\n\n"
 
         for(cheerer of _streamSession.Cheerers)
         {
@@ -824,11 +852,12 @@ GenerateCheersSection = function()
 GenerateTimeLogSection = function()
 {
     if(_streamSession.TimeLogs.length > 0){
-        let timeLogsSection = "\n## TimeLogs\n\n"
+        let timeLogsSection = "\n### TimeLogs\n\n"
+        timeLogsSection += `    00:00:00 Intro\n    00:00:10 Bonjour, Hi!\n`;
 
         for(timeLog of _streamSession.TimeLogs)
         {
-            timeLogsSection += `${timeLog.time} ${timeLog.message}\n`;
+            timeLogsSection += `    ${timeLog.time} ${timeLog.message}\n`;
         }
 
         return timeLogsSection;
@@ -842,13 +871,13 @@ GenerateParachuteSection = function(){
 
     if(_streamSession.UserSession.length > 0){
         const today = new Date();
-        let parachuteSection = "\n## Game Results\n\n"
+        let parachuteSection = "\n### Game Results\n\n"
         
         var sortedUsers = _streamSession.UserSession.sort(compareHightScore);
 
         for ( i=0; i < sortedUsers.length; i++) {
             if(isSameDay(today, new Date(sortedUsers[i].lastUpdate))){
-                parachuteSection += `[@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
+                parachuteSection += `- [@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
             }
         }
         return parachuteSection;
@@ -861,7 +890,7 @@ GenerateParachuteSection = function(){
 GenerateExtraInfo = function(){
 
     if(_streamSession.Notes.length > 0){
-        let noteSection = "\n## Notes/ References / Snippets\n\n"
+        let noteSection = "\n### Notes/ References / Snippets\n\n"
 
         for(note of _streamSession.Notes){
             noteSection += `- ${note}\n`;
@@ -935,7 +964,7 @@ LogRaid = function(user, viewers){
 LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
 
     cloud("Yeah");
-    playSound(SoundEnum.yeah);
+    playSound("yeah", SoundEnum.yeah);
     _streamSession.Subscribers.push(new Subscriber(user, streamMonths));
 }
 
@@ -949,3 +978,52 @@ LogCheer = function( user, message, bits, flags, extra ){
     _streamSession.Cheerers.push( new Cheerer(user, bits));
 }
 
+CreateCloud = function(){
+
+    const animDuration = getRndInt(50,200); 
+    const animDelay = getRndInt(0,30);
+    const animTop = getRndInt(0,300);
+    const animZ = getRndInt(100,105);
+    const cloudImage = getRndInt(1,4);
+    const fliped = (Math.random() < 0.5)?1:-1;
+    const animSize = Math.random() * (1.2 - 0.2) + 0.2;
+    const opacity = Math.random() * (0.5 - 0.2) + 0.2;
+
+    const elemStyle = `animation-duration: ${animDuration}s;animation-delay:${animDelay}s;top:${animTop}px;z-index: ${animZ};opacity:${opacity}; -webkit-transform: scaleX(${fliped});transform: scaleX(${fliped});-moz-transform:scale(${animSize});-webkit-transform:scale(${animSize});transform:scale(${animSize});`;
+
+    const elem = document.createElement('div');
+    elem.style.cssText = elemStyle;
+    elem.className = "movingCloud";
+    const cloud = document.createElement('img');
+    cloud.src = `public/medias/cloud-${cloudImage}.png`;
+    let sky = document.getElementById("sky");
+    elem.appendChild(cloud);
+    sky.appendChild(elem)
+
+}
+
+
+getRndInt = function(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+
+
+makeItRain = function() {
+
+    $('.rain').empty();
+  
+    var increment = 0;
+    var drops = "";
+    var backDrops = "";
+  
+    while (increment < 100) {
+      var randoHundo = (Math.floor(Math.random() * (98 - 1 + 1) + 1));
+      var randoFiver = (Math.floor(Math.random() * (5 - 2 + 1) + 2));
+      increment += randoFiver;
+      drops += '<div class="drop" style="left: ' + increment + '%; bottom: ' + (randoFiver + randoFiver - 1 + 100) + '%; animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div><div class="splat" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
+      backDrops += '<div class="drop" style="right: ' + increment + '%; bottom: ' + (randoFiver + randoFiver - 1 + 100) + '%; animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div><div class="splat" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
+    }
+  
+    $('.rain.front-row').append(drops);
+    $('.rain.back-row').append(backDrops);
+  }

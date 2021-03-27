@@ -128,4 +128,6 @@ src/*.md
 
 src/public/medias/generated/
 
-src/streamSession_0.json
+src/io/secret.js
+src/io/streamSession_[0-9]*.json
+src/io/*.md

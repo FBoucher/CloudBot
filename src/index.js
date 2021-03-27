@@ -82,17 +82,17 @@ app.post("/savetofile", (req, res) => {
 
 
 app.get("/loadfromfile", (req, res) => {
-    console.log("..l.")
+    console.log("..loading from file..")
 
     if(true){
 
 
-        fs.readFile('streamSession.json', 'utf-8', (err, data) => {
+        fs.readFile('io/streamSession.json', 'utf-8', (err, data) => {
             if (err) {
                 res.json({error:err}) 
             }
             console.log("JSON data is load.");
-            //console.log("... Trace: " + data.toString());
+            console.log("... Trace: " + data.toString());
             const streamSession = JSON.parse(data);
             res.send(streamSession)
         });
@@ -140,7 +140,8 @@ app.listen(port, () => console.log(`Example app listening at http://localhost:${
 createImage = function(imageName, message){
 
     fs.mkdir('./public/medias/generated', { recursive: true }, (err) => {
-        if (err) throw err;
+        if (err) 
+            console.log(`!!! Error: ${err}`);
 
         fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
             color: 'white', 
@@ -155,15 +156,19 @@ createImage = function(imageName, message){
 
 
 CleanUpGeneratedImages = function(){
-    const directory = './public/medias/generated';
-
-    fs.readdir(directory, (err, files) => {
-    if (err) throw err;
-
-    for (const file of files) {
-        fs.unlink(path.join(directory, file), err => {
-        if (err) throw err;
+    const directory = './public/medias/generated/';
+    
+    if (fs.existsSync(directory)){
+        fs.readdir(directory, (err, files) => {
+            if (err) 
+                console.log(`!!! Error: ${err}`);
+    
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), err => {
+                    if (err) 
+                        console.log(`!!! Error: ${err}`);
+                });
+            }
         });
     }
-    });
 }

@@ -1,0 +1,20 @@
+name: Release Docker Image CI
+
+on:
+  release:
+    types: [published]
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set outputs
+      id: vars
+      run: echo ::set-output name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: ${{secrets.DOCKER_USER}}/cloudbot
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest,${{ steps.vars.outputs.RELEASE_VERSION }}"

@@ -1,4 +1,5 @@
 # Cloud Bot
+![Release Docker Image CI](https://github.com/FBoucher/CloudBot/workflows/Release%20Docker%20Image%20CI/badge.svg?branch=main) ![Build Beta Docker Images](https://github.com/FBoucher/CloudBot/workflows/Build%20Docker%20Images/badge.svg?branch=main)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -28,7 +29,9 @@ Tools:
 - **!time** <text>: Add a time log to the show notes (those are used to create timestamps on YouTube)
 - **!attention** <text>: Play a notification sound and draw the text in the screen.
 - **!note** <text>: Add a note/ code snippet / url useful during the stream
-
+- **!cmd**, **!command**, **!commands**: Display in the chat the URL back to this list.
+- **!referal**, **!referals**: Display in the chat the URL(s) of Frank's referal(s).
+- **!livecoder**, **!livecoders**: Provide more info about Live Codersin the chat.
 
 Only Broadcaster:
 - **!scores**: display table of highest scores
@@ -36,6 +39,7 @@ Only Broadcaster:
 - **!load**: Load the file containing the previous session data.
 - **!save**: Save in a local file `streamSession.json` the current session data.
 - **!talk**: The bot will repete the message
+- **!so**  <text>: shout-out! to user.
 
 - **!todo-add** <text>:  Add a new To-Do
 - **!todo-start** <number>:  Set the identified To-Do as active
@@ -83,12 +87,38 @@ This project is now available in a container. You can find it on: [https://hub.d
 
 - The container by default uses the port 3000, you can map it to a different one if you want to keep 3000 available for some other node development (in the command below, the chat bot will be available at http://localhost:3001). 
 
-- To export the stream notes mount a volume. The `${PWD}` is the current local folder on the host. The file `secret.js` also goes in this folder.
+- The `${PWD}` is the current local folder on the host. This folder MUST CONTAINED: 
+  - a file `secret.js`  with a auth key in it.
+
+    ```javascript
+    const authToken = "oauth:____________________";
+    ```
+
+  - a file `streamSession.json` To initialize the sessions.
+
+    ```json
+    {
+      "Project": "",
+      "Id": 42,
+      "DateTimeStart": "",
+      "DateTimeEnd": "",
+      "Notes": [],
+      "UserSession": [],
+      "NewFollowers": [],
+      "Raiders": [],
+      "Subscribers": [],
+      "Hosts": [],
+      "Cheerers": [],
+      "TimeLogs": [],
+      "Todos": [],
+      "Reminders": []
+    }
+    ```
 
 Here an example how to instantiate the chatbot.
 
 ```bash
-docker run -p 3001:3000 -d -v ${PWD}:/usr/src/app/io fboucher/cloudbot
+docker run -p 3001:3000 -d -v ${PWD}:/usr/src/app/io  --name ceebee fboucher/cloudbot:latest
 ```
 
 
