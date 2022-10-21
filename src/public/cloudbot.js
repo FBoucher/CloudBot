@@ -700,7 +700,7 @@ StreamNoteStart = async function(projectName)
         //console.log('.. streamSession before : ', _streamSession);
         _streamSession.Project = projectName;
         _streamSession.DateTimeStart = new Date();
-        _streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
+        //_streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
         //console.log('.. streamSession just after : ', _streamSession);
     });
 
