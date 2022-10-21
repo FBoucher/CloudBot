@@ -158,7 +158,10 @@ createImage = function(imageName, message){
 CleanUpGeneratedImages = function(){
     const directory = './public/medias/generated/';
     
-    if (fs.existsSync(directory)){
+    let isFolderExist = fs.existsSync(directory);
+    console.log(`--> trace: isFolderExist: ${isFolderExist}`);
+
+    if (isFolderExist){
         fs.readdir(directory, (err, files) => {
             if (err) 
                 console.log(`!!! Error: ${err}`);

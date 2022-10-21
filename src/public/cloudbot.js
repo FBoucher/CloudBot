@@ -136,7 +136,9 @@ const SoundEnum = {
     bonjourHi : "public/medias/BonjourHi.mp3",
     badFeeling : "public/medias/badfeeling.mp3",
     doorknock: "public/medias/knocking-on-door.mp3",
-    hmmhmm: "public/medias/hmmhmm.mp3"
+    hmmhmm: "public/medias/hmmhmm.mp3",
+    rain: "public/medias/rain.mp4",
+    rainUmbrella: "public/medias/Rain-On-Umbrella.com.mp3"
 };
 
 const TodoStatusEnum = {
@@ -323,7 +325,7 @@ HightScoreParty = function(user, score){
     //ChatBotShout(msg);
     DisplayNotification("New high score!", msg);
     cloud("Yeah");
-    playSound(SoundEnum.yeah);
+    playSound("yeah", SoundEnum.yeah);
 }
 
 
@@ -421,7 +423,7 @@ Attention = function(user, message)
   
         setTimeout(() => {
             ChatBotShow('Thumbs-up', result.msg)
-            playSound(SoundEnum.hmmhmm);
+            playSound("hmmhmm", SoundEnum.hmmhmm);
         }, 1000); 
         
     })
@@ -627,10 +629,36 @@ LoadStreamSession = function(data, projectName, isReload, callback)
     console.log('done loading:', _streamSession);
 }
 
-playSound = function(fileName)
+getCloudAudio = function(name, fileName, inLoop){
+
+    let cbAudio = document.getElementById(name);
+    if(cbAudio){
+        return cbAudio;
+    }
+        
+    let audio = new Audio(fileName);
+    audio.id = name;
+    audio.loop = inLoop;
+    document.body.appendChild(audio);
+    return getCloudAudio(name);
+}
+
+playSound = function(name, fileName)
 {
-    var audio = new Audio(fileName);
-    audio.play();
+    playSound(name, fileName, false);
+}
+
+playSound = function(name, fileName, inLoop)
+{
+    let cbAudio = getCloudAudio(name, fileName, inLoop);
+    cbAudio.play();
+
+}
+
+stopSound = function(name, fileName, inLoop)
+{
+    let cbAudio = getCloudAudio(name, fileName, inLoop);
+    cbAudio.pause();
 }
 
 
@@ -672,7 +700,7 @@ StreamNoteStart = async function(projectName)
         //console.log('.. streamSession before : ', _streamSession);
         _streamSession.Project = projectName;
         _streamSession.DateTimeStart = new Date();
-        _streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
+        //_streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
         //console.log('.. streamSession just after : ', _streamSession);
     });
 
@@ -825,6 +853,7 @@ GenerateTimeLogSection = function()
 {
     if(_streamSession.TimeLogs.length > 0){
         let timeLogsSection = "\n### TimeLogs\n\n"
+        timeLogsSection += `    00:00:00 Intro\n    00:00:10 Bonjour, Hi!\n`;
 
         for(timeLog of _streamSession.TimeLogs)
         {
@@ -935,7 +964,7 @@ LogRaid = function(user, viewers){
 LogSub = function(user, message, subTierInfo, streamMonths, cumulativeMonths){
 
     cloud("Yeah");
-    playSound(SoundEnum.yeah);
+    playSound("yeah", SoundEnum.yeah);
     _streamSession.Subscribers.push(new Subscriber(user, streamMonths));
 }
 
@@ -949,3 +978,52 @@ LogCheer = function( user, message, bits, flags, extra ){
     _streamSession.Cheerers.push( new Cheerer(user, bits));
 }
 
+CreateCloud = function(){
+
+    const animDuration = getRndInt(50,200); 
+    const animDelay = getRndInt(0,30);
+    const animTop = getRndInt(0,300);
+    const animZ = getRndInt(100,105);
+    const cloudImage = getRndInt(1,4);
+    const fliped = (Math.random() < 0.5)?1:-1;
+    const animSize = Math.random() * (1.2 - 0.2) + 0.2;
+    const opacity = Math.random() * (0.5 - 0.2) + 0.2;
+
+    const elemStyle = `animation-duration: ${animDuration}s;animation-delay:${animDelay}s;top:${animTop}px;z-index: ${animZ};opacity:${opacity}; -webkit-transform: scaleX(${fliped});transform: scaleX(${fliped});-moz-transform:scale(${animSize});-webkit-transform:scale(${animSize});transform:scale(${animSize});`;
+
+    const elem = document.createElement('div');
+    elem.style.cssText = elemStyle;
+    elem.className = "movingCloud";
+    const cloud = document.createElement('img');
+    cloud.src = `public/medias/cloud-${cloudImage}.png`;
+    let sky = document.getElementById("sky");
+    elem.appendChild(cloud);
+    sky.appendChild(elem)
+
+}
+
+
+getRndInt = function(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+
+
+makeItRain = function() {
+
+    $('.rain').empty();
+  
+    var increment = 0;
+    var drops = "";
+    var backDrops = "";
+  
+    while (increment < 100) {
+      var randoHundo = (Math.floor(Math.random() * (98 - 1 + 1) + 1));
+      var randoFiver = (Math.floor(Math.random() * (5 - 2 + 1) + 2));
+      increment += randoFiver;
+      drops += '<div class="drop" style="left: ' + increment + '%; bottom: ' + (randoFiver + randoFiver - 1 + 100) + '%; animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div><div class="splat" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
+      backDrops += '<div class="drop" style="right: ' + increment + '%; bottom: ' + (randoFiver + randoFiver - 1 + 100) + '%; animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"><div class="stem" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div><div class="splat" style="animation-delay: 0.' + randoHundo + 's; animation-duration: 0.5' + randoHundo + 's;"></div></div>';
+    }
+  
+    $('.rain.front-row').append(drops);
+    $('.rain.back-row').append(backDrops);
+  }
