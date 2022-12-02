@@ -121,6 +121,7 @@ Here an example how to instantiate the chatbot.
 docker run -p 3001:3000 -d -v ${PWD}:/usr/src/app/io  --name ceebee fboucher/cloudbot:latest
 ```
 
+Then on stream in the chat type !start [projectName]
 
 ~ **Have fun!**
 
