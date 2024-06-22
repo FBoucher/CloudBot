@@ -134,11 +134,14 @@ class StreamSession
 const SoundEnum = {
     yeah : "public/medias/yeah.mp3",
     bonjourHi : "public/medias/BonjourHi.mp3",
+    sirbonjour : "public/medias/sir-bonjour-hi.mp3",
+    sirbonjourhowareyou : "public/medias/sir-bonjour-hi-how-are-you.mp3",
     badFeeling : "public/medias/badfeeling.mp3",
     doorknock: "public/medias/knocking-on-door.mp3",
     hmmhmm: "public/medias/hmmhmm.mp3",
     rain: "public/medias/rain.mp4",
-    rainUmbrella: "public/medias/Rain-On-Umbrella.com.mp3"
+    rainUmbrella: "public/medias/Rain-On-Umbrella.com.mp3",
+    previously: "public/medias/previously.mp3"
 };
 
 const TodoStatusEnum = {

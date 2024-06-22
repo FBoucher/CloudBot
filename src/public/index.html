@@ -451,12 +451,28 @@
             }
             else if (command === "bonjour") {
                 console.log("!bonjour was typed in chat");
-                playSound("bonjourHi", SoundEnum.bonjourHi);
+                let i = Math.floor(Math.random() * 3);
+                switch (i) {
+                    case 0:
+                        playSound("bonjour", SoundEnum.bonjourHi);
+                        break;
+                    case 1:
+                        playSound("sirbonjour", SoundEnum.sirbonjour);
+                        break;
+                    case 2:
+                        playSound("sirbonjourhowareyou", SoundEnum.sirbonjourhowareyou);
+                        break;
+                }
             }
             else if (command === "knock") {
                 console.log("!knock was typed in chat");
                 playSound("doorknock", SoundEnum.doorknock);
             }
+            else if (command === "previously") {
+                console.log("!previously was typed in chat");
+                playSound("previously", SoundEnum.previously);
+            }
+
 
             //=====================================================
         }

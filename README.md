@@ -17,10 +17,11 @@ Games:
 - **!stats**: Display current user stats
 
 Sounds:
-- **!bonjour**: play sound "Bonjour Hi"
+- **!bonjour**: play sound "Bonjour Hi" 3 different version at random
 - **!bad**: play sound "Bonjour Hi"
 - **!yeah**: play sound "Yeeeeeeaaaah!"
 - **!knock** : Play sound "Realistic knock on a door"
+- **!previously** : Play sound "Previously on Frank's channel" said by Jeff Fritz
 
 CB:
 - **!cloud** : Show CD (aka Cloud Bot) GIF
