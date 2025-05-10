@@ -1,177 +1,182 @@
-const express = require('express')
-const path = require('path')
+// index.js - Main server file for CloudBot
+// Provides API endpoints for chat bot features, file storage, and image generation
+// Uses Express.js and Node.js best practices for stability and reliability
+
+const express = require('express');
+const path = require('path');
 const fs = require('fs');
 const dateFormat = require('dateformat');
 const text2png = require('text2png');
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
-app.use('/public', express.static("public"));
-app.use('/io', express.static("io"));
+// Serve static files
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/io', express.static(path.join(__dirname, 'io')));
 app.use(express.json());
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/', 'index.html')))
+// Root route: serve main HTML page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/', 'index.html'));
+});
 
-app.post("/Hello", (req, res) => {
-
-    if(req.body && req.body.user){
-        let user = req.body.user;
-        let filename = dateFormat(new Date(), "yyyy-mm-dd-HHMM");
-        filename += `_hello-${user}.png`;
-        
+// POST /Hello: Generate a hello image for a user
+app.post('/Hello', (req, res) => {
+    if (req.body && req.body.user) {
+        const user = req.body.user;
+        let filename = dateFormat(new Date(), 'yyyy-mm-dd-HHMM') + `_hello-${user}.png`;
         console.log(`new image: ${filename}`);
-
-        let msg = `Hello ${user}!`;
-        createImage(filename, msg);
-        res.send({"msg":filename}) 
+        const msg = `Hello ${user}!`;
+        try {
+            createImage(filename, msg);
+            res.json({ msg: filename });
+        } catch (err) {
+            console.error('Error creating image:', err);
+            res.status(500).json({ error: 'Failed to create image.' });
+        }
+    } else {
+        res.status(400).json({ error: 'No user.' });
     }
-    else{
-        res.json({error:"no user."}) 
-    }
+});
 
-})
-
-
-
-app.post("/Attention", (req, res) => {
-
-    if(req.body && req.body.user){
-        let user = req.body.user;
-        let userMsg = req.body.message;
-        let filename = dateFormat(new Date(), "yyyy-mm-dd-HHMM");
-        filename += `_Att-${user}.png`;
-
+// POST /Attention: Generate an attention image for a user message
+app.post('/Attention', (req, res) => {
+    if (req.body && req.body.user && req.body.message) {
+        const user = req.body.user;
+        const userMsg = req.body.message;
+        let filename = dateFormat(new Date(), 'yyyy-mm-dd-HHMM') + `_Att-${user}.png`;
         console.log(`new image: ${filename}`);
-
-        let msg = `${user} said\:\n${userMsg}`;
-        createImage(filename, msg);
-        res.send({"msg":filename}) 
+        const msg = `${user} said:\n${userMsg}`;
+        try {
+            createImage(filename, msg);
+            res.json({ msg: filename });
+        } catch (err) {
+            console.error('Error creating image:', err);
+            res.status(500).json({ error: 'Failed to create image.' });
+        }
+    } else {
+        res.status(400).json({ error: 'Missing user or message.' });
     }
-    else{
-        res.json({error:"no user."}) 
-    }
+});
 
-})
-
-
-
-
-app.post("/savetofile", (req, res) => {
-    console.log("..s.")
-
-    if(req.body && req.body.streamSession){
-
-        console.log(req.body.streamSession)
-
-        const data = JSON.stringify(req.body.streamSession,null, 2);
-        const filename = `io/streamSession_${req.body.streamSession.Id}.json`
-
+// POST /savetofile: Save stream session data to a file
+app.post('/savetofile', (req, res) => {
+    console.log('..s.');
+    if (req.body && req.body.streamSession) {
+        const data = JSON.stringify(req.body.streamSession, null, 2);
+        const filename = path.join(__dirname, 'io', `streamSession_${req.body.streamSession.Id}.json`);
         fs.writeFile(filename, data, (err) => {
             if (err) {
-                res.json({error:err}) 
+                console.error('Error saving JSON:', err);
+                return res.status(500).json({ error: 'Failed to save data.' });
             }
-            console.log("JSON data is saved.");
-            res.send({"msg":"Data is saved."})
+            console.log('JSON data is saved.');
+            res.json({ msg: 'Data is saved.' });
         });
+    } else {
+        res.status(400).json({ error: 'No data.' });
     }
-    else{
-        res.json({error:"no data"}) 
-    }
+});
 
-})
-
-
-app.get("/loadfromfile", (req, res) => {
-    console.log("..loading from file..")
-
-    if(true){
-
-
-        fs.readFile('io/streamSession.json', 'utf-8', (err, data) => {
-            if (err) {
-                res.json({error:err}) 
-            }
-            console.log("JSON data is load.");
-            console.log("... Trace: " + data.toString());
+// GET /loadfromfile: Load stream session data from a file
+app.get('/loadfromfile', (req, res) => {
+    console.log('..loading from file..');
+    const filename = path.join(__dirname, 'io', 'streamSession.json');
+    fs.readFile(filename, 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error loading JSON:', err);
+            return res.status(500).json({ error: 'Failed to load data.' });
+        }
+        try {
             const streamSession = JSON.parse(data);
-            res.send(streamSession)
-        });
-    }
-    else{
-        res.json({error:"no data"}) 
-    }
-
-})
-
- 
-app.post("/genstreamnotes", (req, res) => {
-    console.log("..g.");
-    console.log("..project name: " + req.body.project);
-
-    let filename = "io/" + dateFormat(new Date(), "yyyy-mm-dd");
-    filename += ` - ${req.body.id} - ${req.body.project}.md`;
-
-    console.log("..filename: " +  filename);
-
-    if(req.body && req.body.notes){
-
-        console.log(req.body.notes)
-
-        //const data = JSON.stringify(req.body.notes,null, 2)
-        const data = req.body.notes;
-        fs.writeFile(filename, data, (err) => {
-            if (err) {
-                res.json({error:err}) 
-            }
-            console.log("Notes saved.");
-            res.send({"msg":"Notes saved."})
-        });
-    }
-    else{
-        res.json({error:"no data"}) 
-    }
-    CleanUpGeneratedImages();
-})
-
-//test
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
-
-
-createImage = function(imageName, message){
-
-    fs.mkdir('./public/medias/generated', { recursive: true }, (err) => {
-        if (err) 
-            console.log(`!!! Error: ${err}`);
-
-        fs.writeFileSync(`./public/medias/generated/${imageName}`, text2png(message , {
-            color: 'white', 
-            strokeWidth: '1.5',
-            strokeColor: 'gray',
-            font: '65px sans-serif'
-            // font: '65px McKloud Black',
-            // localFontName: 'McKloud Black'
-        }));
+            console.log('JSON data is load.');
+            res.json(streamSession);
+        } catch (parseErr) {
+            console.error('Error parsing JSON:', parseErr);
+            res.status(500).json({ error: 'Corrupted data file.' });
+        }
     });
+});
+
+// POST /genstreamnotes: Save stream notes to a markdown file
+app.post('/genstreamnotes', (req, res) => {
+    console.log('..g.');
+    if (!req.body || !req.body.project || !req.body.id || !req.body.notes) {
+        return res.status(400).json({ error: 'Missing project, id, or notes.' });
+    }
+    const filename = path.join(
+        __dirname,
+        'io',
+        `${dateFormat(new Date(), 'yyyy-mm-dd')} - ${req.body.id} - ${req.body.project}.md`
+    );
+    console.log('..filename: ' + filename);
+    const data = req.body.notes;
+    fs.writeFile(filename, data, (err) => {
+        if (err) {
+            console.error('Error saving notes:', err);
+            return res.status(500).json({ error: 'Failed to save notes.' });
+        }
+        console.log('Notes saved.');
+        res.json({ msg: 'Notes saved.' });
+        CleanUpGeneratedImages();
+    });
+});
+
+// Start the server
+app.listen(port, () => {
+    console.log(`CloudBot app listening at http://localhost:${port}`);
+});
+
+/**
+ * createImage - Generates a PNG image with the given message and saves it to disk
+ * @param {string} imageName - The filename for the image
+ * @param {string} message - The text to render in the image
+ */
+function createImage(imageName, message) {
+    const dir = path.join(__dirname, 'public', 'medias', 'generated');
+    try {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        const filePath = path.join(dir, imageName);
+        fs.writeFileSync(
+            filePath,
+            text2png(message, {
+                color: 'white',
+                strokeWidth: 1.5,
+                strokeColor: 'gray',
+                font: '65px sans-serif',
+            })
+        );
+    } catch (err) {
+        console.error('Error in createImage:', err);
+        throw err;
+    }
 }
 
-
-CleanUpGeneratedImages = function(){
-    const directory = './public/medias/generated/';
-    
-    let isFolderExist = fs.existsSync(directory);
-    console.log(`--> trace: isFolderExist: ${isFolderExist}`);
-
-    if (isFolderExist){
-        fs.readdir(directory, (err, files) => {
-            if (err) 
-                console.log(`!!! Error: ${err}`);
-    
-            for (const file of files) {
-                fs.unlink(path.join(directory, file), err => {
-                    if (err) 
-                        console.log(`!!! Error: ${err}`);
-                });
-            }
-        });
+/**
+ * CleanUpGeneratedImages - Deletes all files in the generated images directory
+ * to keep the folder clean after notes are generated.
+ */
+function CleanUpGeneratedImages() {
+    const directory = path.join(__dirname, 'public', 'medias', 'generated');
+    if (!fs.existsSync(directory)) {
+        console.log('--> trace: generated folder does not exist.');
+        return;
     }
+    fs.readdir(directory, (err, files) => {
+        if (err) {
+            console.error('Error reading generated folder:', err);
+            return;
+        }
+        for (const file of files) {
+            // Do not delete .gitkeep or empty.txt or other important files
+            if (file === '.gitkeep' || file === 'empty.txt') continue;
+            fs.unlink(path.join(directory, file), (err) => {
+                if (err) {
+                    console.error(`Error deleting file ${file}:`, err);
+                }
+            });
+        }
+    });
 }
