@@ -1,5 +1,3 @@
-
-
 class Note
 {
     constructor(text) {
@@ -690,8 +688,6 @@ ResetHightScore = function()
 
 
 
-
-
 // == Generate files =========================================
 // ===
 
@@ -883,6 +879,59 @@ GenerateParachuteSection = function(){
                 parachuteSection += `- [@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
             }
         }
+
+        // --- Statistics ---
+        let bestScoreUser = null;
+        let biggestLoser = null;
+        let luckiest = null;
+        let superParticipant = null;
+        let maxScore = -Infinity;
+        let maxDrop = -Infinity;
+        let minDropForMaxScore = Infinity;
+        let maxDropLoser = -Infinity;
+
+        _streamSession.UserSession.forEach(user => {
+            // Best score
+            if (user.highScore > maxScore) {
+                maxScore = user.highScore;
+                bestScoreUser = user;
+            }
+            // Super participant
+            if (user.dropCount > maxDrop) {
+                maxDrop = user.dropCount;
+                superParticipant = user;
+            }
+            // Biggest loser
+            if (user.bestHighScore == 0 && user.dropCount > maxDropLoser) {
+                maxDropLoser = user.dropCount;
+                biggestLoser = user;
+            }
+        });
+
+        // Luckiest: among users with the highest score, pick the one with the lowest dropCount
+        _streamSession.UserSession.forEach(user => {
+            if (user.highScore === maxScore) {
+                if (user.dropCount < minDropForMaxScore) {
+                    minDropForMaxScore = user.dropCount;
+                    luckiest = user;
+                }
+            }
+        });
+
+        parachuteSection += "\n#### Statistics\n\n";
+        if (bestScoreUser) {
+            parachuteSection += `- 🏆Best score: [@${bestScoreUser.user}](https://www.twitch.tv/${bestScoreUser.user}) with ${bestScoreUser.highScore}\n`;
+        }
+        if (biggestLoser) {
+            parachuteSection += `- 😭Biggest loser: [@${biggestLoser.user}](https://www.twitch.tv/${biggestLoser.user}) with ${biggestLoser.dropCount} drops and no high score\n`;
+        }
+        if (luckiest) {
+            parachuteSection += `- 🍀Luckiest: [@${luckiest.user}](https://www.twitch.tv/${luckiest.user}) with best score ${luckiest.highScore} and only ${luckiest.dropCount} drops\n`;
+        }
+        if (superParticipant) {
+            parachuteSection += `- 🎖️Super participant: [@${superParticipant.user}](https://www.twitch.tv/${superParticipant.user}) with ${superParticipant.dropCount} drops\n`;
+        }
+
         return parachuteSection;
     }
 
