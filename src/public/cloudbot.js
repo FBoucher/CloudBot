@@ -519,6 +519,7 @@ SaveToFile = function(verbose = true)
     })
     .catch(error => {
         console.error('Error:', error);
+        ChatBotSay('Error: ' + error);
     });
 
 }
@@ -697,10 +698,13 @@ StreamNoteStart = async function(projectName)
     LoadFromFile(projectName, false, function(projectName){
         //console.log('.. the project name: ', projectName);
         //console.log('.. streamSession before : ', _streamSession);
+        if(_streamSession.id == undefined || _streamSession.id == null || _streamSession.id == 0){
+            _streamSession.Id = Math.floor((Math.random() * 100));
+        }
         _streamSession.Project = projectName;
         _streamSession.DateTimeStart = new Date();
         //_streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
-        //console.log('.. streamSession just after : ', _streamSession);
+        console.log('.. streamSession just after : ', _streamSession);
     });
 
 }
@@ -711,14 +715,16 @@ StreamNoteStart = async function(projectName)
 
 StreamNoteStop = function()
 {
+    _streamSession.DateTimeEnd = new Date(); 
     SaveToFile();
-    let streamNotes = Generate_streamSessions();
-    //console.log('Notes: ', streamNotes);
-    SaveNotesToFile(streamNotes);
+    console.log('_streamSession: ', _streamSession);
+    let streamNotes = Generate_streamSession();
+    console.log('Notes: ', streamNotes);
+    SaveNotesToFile(_streamSession, streamNotes);
 }
 
 
-Generate_streamSessions = function()
+Generate_streamSession = function()
 {
     let streamNotes = "";
 
@@ -955,9 +961,9 @@ GenerateExtraInfo = function(){
 
 
 
-SaveNotesToFile = function(_streamSessions)
+SaveNotesToFile = function(streamSession, streamNotes)
 {
-    const data = {id: _streamSession.Id, project: _streamSession.Project, notes: _streamSessions};
+    const data = {id: streamSession.Id, project: streamSession.Project, notes: streamNotes};
     console.log('..g. data: ', data);
     const options = {
         method: 'POST',
