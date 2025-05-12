@@ -1,5 +1,3 @@
-
-
 class Note
 {
     constructor(text) {
@@ -521,6 +519,7 @@ SaveToFile = function(verbose = true)
     })
     .catch(error => {
         console.error('Error:', error);
+        ChatBotSay('Error: ' + error);
     });
 
 }
@@ -690,8 +689,6 @@ ResetHightScore = function()
 
 
 
-
-
 // == Generate files =========================================
 // ===
 
@@ -701,10 +698,13 @@ StreamNoteStart = async function(projectName)
     LoadFromFile(projectName, false, function(projectName){
         //console.log('.. the project name: ', projectName);
         //console.log('.. streamSession before : ', _streamSession);
+        if(_streamSession.id == undefined || _streamSession.id == null || _streamSession.id == 0){
+            _streamSession.Id = Math.floor((Math.random() * 100));
+        }
         _streamSession.Project = projectName;
         _streamSession.DateTimeStart = new Date();
         //_streamSession.Reminders.push(new Reminder("time", "What are we working on? Should I update the TimeLog of ToDos?"));
-        //console.log('.. streamSession just after : ', _streamSession);
+        console.log('.. streamSession just after : ', _streamSession);
     });
 
 }
@@ -715,14 +715,16 @@ StreamNoteStart = async function(projectName)
 
 StreamNoteStop = function()
 {
+    _streamSession.DateTimeEnd = new Date(); 
     SaveToFile();
-    let streamNotes = Generate_streamSessions();
-    //console.log('Notes: ', streamNotes);
-    SaveNotesToFile(streamNotes);
+    console.log('_streamSession: ', _streamSession);
+    let streamNotes = Generate_streamSession();
+    console.log('Notes: ', streamNotes);
+    SaveNotesToFile(_streamSession, streamNotes);
 }
 
 
-Generate_streamSessions = function()
+Generate_streamSession = function()
 {
     let streamNotes = "";
 
@@ -883,6 +885,59 @@ GenerateParachuteSection = function(){
                 parachuteSection += `- [@${sortedUsers[i].user}](https://www.twitch.tv/${sortedUsers[i].user}): ${sortedUsers[i].highScore}\n`;
             }
         }
+
+        // --- Statistics ---
+        let bestScoreUser = null;
+        let biggestLoser = null;
+        let luckiest = null;
+        let superParticipant = null;
+        let maxScore = -Infinity;
+        let maxDrop = -Infinity;
+        let minDropForMaxScore = Infinity;
+        let maxDropLoser = -Infinity;
+
+        _streamSession.UserSession.forEach(user => {
+            // Best score
+            if (user.highScore > maxScore) {
+                maxScore = user.highScore;
+                bestScoreUser = user;
+            }
+            // Super participant
+            if (user.dropCount > maxDrop) {
+                maxDrop = user.dropCount;
+                superParticipant = user;
+            }
+            // Biggest loser
+            if (user.bestHighScore == 0 && user.dropCount > maxDropLoser) {
+                maxDropLoser = user.dropCount;
+                biggestLoser = user;
+            }
+        });
+
+        // Luckiest: among users with the highest score, pick the one with the lowest dropCount
+        _streamSession.UserSession.forEach(user => {
+            if (user.highScore === maxScore) {
+                if (user.dropCount < minDropForMaxScore) {
+                    minDropForMaxScore = user.dropCount;
+                    luckiest = user;
+                }
+            }
+        });
+
+        parachuteSection += "\n#### Statistics\n\n";
+        if (bestScoreUser) {
+            parachuteSection += `- 🏆Best score: [@${bestScoreUser.user}](https://www.twitch.tv/${bestScoreUser.user}) with ${bestScoreUser.highScore}\n`;
+        }
+        if (biggestLoser) {
+            parachuteSection += `- 😭Biggest loser: [@${biggestLoser.user}](https://www.twitch.tv/${biggestLoser.user}) with ${biggestLoser.dropCount} drops and no high score\n`;
+        }
+        if (luckiest) {
+            parachuteSection += `- 🍀Luckiest: [@${luckiest.user}](https://www.twitch.tv/${luckiest.user}) with best score ${luckiest.highScore} and only ${luckiest.dropCount} drops\n`;
+        }
+        if (superParticipant) {
+            parachuteSection += `- 🎖️Super participant: [@${superParticipant.user}](https://www.twitch.tv/${superParticipant.user}) with ${superParticipant.dropCount} drops\n`;
+        }
+
         return parachuteSection;
     }
 
@@ -906,9 +961,9 @@ GenerateExtraInfo = function(){
 
 
 
-SaveNotesToFile = function(_streamSessions)
+SaveNotesToFile = function(streamSession, streamNotes)
 {
-    const data = {id: _streamSession.Id, project: _streamSession.Project, notes: _streamSessions};
+    const data = {id: streamSession.Id, project: streamSession.Project, notes: streamNotes};
     console.log('..g. data: ', data);
     const options = {
         method: 'POST',
